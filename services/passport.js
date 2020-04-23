@@ -7,8 +7,8 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-passport.deserializeUser(async ({ githubID }, done) => {
-  done(null, { githubID });
+passport.deserializeUser(async ({ githubID, username }, done) => {
+  done(null, { githubID, username });
 });
 
 passport.use(
@@ -27,7 +27,7 @@ passport.use(
           photo: profile.photos[0].value,
         },
       });
-      done(null, { githubID: profile.id });
+      done(null, { githubID: profile.id, username: profile.username });
     }
   )
 );

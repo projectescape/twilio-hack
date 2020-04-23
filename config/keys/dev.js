@@ -1,3 +1,5 @@
+const twilioKeys = require("./twilio");
+
 module.exports = {
   github: {
     clientID: "7e2c20e1d4910d057ca0",
@@ -5,4 +7,5 @@ module.exports = {
   },
   cookieKey: "MyCookieKey",
   DATABASE_URL: "postgresql://postgres:docker@localhost:5432/twiliohack",
+  twilioKeys,
 };
