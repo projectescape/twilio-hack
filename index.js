@@ -33,7 +33,8 @@ app.get("/", (req, res) => {
 });
 
 require("./routes/authRoutes")(app);
-// require("./routes/apiRoutes")(app);
+require("./routes/twilioRoutes")(app);
+require("./routes/apiRoutes")(app);
 
 // For deployment setup
 if (process.env.NODE_ENV === "production") {

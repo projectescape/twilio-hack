@@ -11,11 +11,11 @@ module.exports = (app) => {
     "/auth/github/callback",
     passport.authenticate("github", { failureRedirect: "/login" }),
     function (req, res) {
-      res.redirect("/");
+      res.redirect("/handleLogin");
     }
   );
 
-  app.get("/auth/github/user", async (req, res) => {
+  app.get("/auth/current_user", async (req, res) => {
     console.log(req.user);
     if (!req.user) res.send("Not Logged In");
     else {
