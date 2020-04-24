@@ -10,6 +10,8 @@ const reducer = (state, action) => {
       return { ...state, profile: action.payload };
     case "handleLogin":
       return { ...state, ...action.payload };
+    case "handleLogout":
+      return { ...state, ...action.payload };
     default:
       return state;
   }
@@ -38,12 +40,24 @@ export const Provider = ({ children }) => {
     });
   };
 
+  const handleLogout = async () => {
+    await axios.get("/auth/logout");
+    dispatch({
+      type: "handleLogout",
+      payload: {
+        profile: null,
+        chatClient: null,
+      },
+    });
+  };
+
   return (
     <Context.Provider
       value={{
         ...state,
         fetchProfile,
         handleLogin,
+        handleLogout,
       }}
     >
       {children}

@@ -2,8 +2,9 @@ import React, { useContext } from "react";
 import { Switch, Route } from "react-router-dom";
 import Context from "./context";
 import Landing from "./pages/Landing";
-import Home from "./pages/Home";
+import Channels from "./pages/Channels";
 import HandleLogin from "./components/HandleLogin";
+import Navbar from "./components/Navbar";
 
 const Routes = () => {
   const { profile } = useContext(Context);
@@ -18,9 +19,20 @@ const Routes = () => {
   }
 
   return (
-    <Switch>
-      <Home />
-    </Switch>
+    <>
+      <Navbar />
+      <section
+        className="hero is-dark is-fullheight-with-navbar"
+        style={{
+          display: "flex",
+          overflow: "hidden",
+        }}
+      >
+        <Switch>
+          <Channels />
+        </Switch>
+      </section>
+    </>
   );
 };
 

@@ -26,6 +26,6 @@ module.exports = (app) => {
 
   app.get("/auth/logout", async (req, res) => {
     req.logout();
-    res.redirect("/");
+    res.send("Logged Out");
   });
 };
