@@ -2,12 +2,28 @@ import React from "react";
 
 const BannerLeft = ({ title }) => {
   return (
-    <div className="column is-1" style={{ width: "3rem", margin: "auto" }}>
-      <div className="is-size-4 " style={{ transform: "rotate(-90deg)" }}>
+    <div
+      style={{
+        display: "inline-block",
+        width: "30px",
+        height: "100%",
+        paddingTop: "50vh",
+      }}
+    >
+      <div
+        className="is-size-4 has-text-white-bis "
+        style={{
+          transform: "rotate(-90deg)",
+        }}
+      >
         {title}
       </div>
     </div>
   );
 };
+// return (
+//   <div style={{ width: "3rem", margin: "auto", position: "sticky" }}>
+//   </div>
+// );
 
 export default BannerLeft;

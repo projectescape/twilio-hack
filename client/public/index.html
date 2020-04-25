@@ -28,6 +28,10 @@
       rel="stylesheet"
       href="https://unpkg.com/bulma-fluent@0.3.20/css/bulma.min.css"
     /> -->
+    <!-- <link
+      rel="stylesheet"
+      href="https://jenil.github.io/bulmaswatch/darkly/bulmaswatch.min.css"
+    /> -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css"
@@ -38,9 +42,30 @@
     ></script>
     <title>React App</title>
   </head>
-  <body class="has-navbar-fixed-top">
+
+  <style>
+    html {
+      overflow: hidden;
+    }
+
+    .disable-scrollbars::-webkit-scrollbar {
+      width: 0px;
+      background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+    .disable-scrollbars {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+    }
+  </style>
+
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div
+      class="has-background-dark"
+      style="height: 100vh; overflow: hidden;"
+      id="root"
+    ></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

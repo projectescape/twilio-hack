@@ -1,26 +1,37 @@
 import React from "react";
 import BannerLeft from "../components/BannerLeft";
-import ColumnLeft from "../components/ColumnLeft";
-import ColumnRight from "../components/ColumnRight";
-import ColumnCenter from "../components/ColumnCenter";
+import SearchLeft from "../components/SearchLeft";
+import SearchCenter from "../components/SearchCenter";
+import ResizablePanels from "../components/ResizablePanelsReact";
 
 const Channels = () => {
   return (
-    <div
-      className="columns"
-      style={{
-        marginTop: "0",
-        flex: 1,
-
-        display: "flex",
-        borderTop: "2px solid #aaa",
-      }}
-    >
+    <>
       <BannerLeft title="Channels" />
-      <ColumnLeft>Channels</ColumnLeft>
-      <ColumnCenter>Search</ColumnCenter>
-      <ColumnRight>Channels</ColumnRight>
-    </div>
+      <div
+        id="lul"
+        style={{
+          display: "inline-block",
+          height: "100%",
+          width: "calc(100vw - 30px)",
+          verticalAlign: "top",
+        }}
+      >
+        <ResizablePanels
+          bkcolor="#e9e9e9"
+          displayDirection="row"
+          width="100%"
+          height="100%"
+          panelsSize={[30, 70]}
+          sizeUnitMeasure="%"
+          resizerColor="#353b48"
+          resizerSize="10px"
+        >
+          <SearchLeft title="Your Channels" />
+          <SearchCenter />
+        </ResizablePanels>
+      </div>
+    </>
   );
 };
 

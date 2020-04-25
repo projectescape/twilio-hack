@@ -8,14 +8,14 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="navbar is-dark is-fixed-top" aria-label="main navigation">
+      <nav className="navbar is-dark" aria-label="main navigation">
         <div className="navbar-start">
           <Link to="/" className="navbar-item">
-            Chit Chat Git
+            <div className="title is-4 has-text-white-bis">Git Talking</div>
           </Link>
         </div>
         <div className="navbar-end">
-          <div className="navbar-item">Welcome {profile.username}</div>
+          {/* <div className="navbar-item">Welcome {profile.username}</div> */}
           <div className="navbar-item">
             <div className="buttons">
               <button
