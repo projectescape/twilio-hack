@@ -1,13 +1,13 @@
 import React from "react";
 import BannerLeft from "../components/BannerLeft";
-import SearchLeft from "../components/SearchLeft";
-import SearchCenter from "../components/SearchCenter";
+import ChannelLeft from "../components/ChannelLeft";
+import ChannelCenter from "../components/ChannelCenter";
 import ResizablePanels from "../components/ResizablePanelsReact";
 
-const Channels = () => {
+const SearchChannel = () => {
   return (
     <>
-      <BannerLeft title="Channels" />
+      <BannerLeft title="ChannelName" />
       <div
         id="lul"
         style={{
@@ -27,12 +27,12 @@ const Channels = () => {
           resizerColor="#353b48"
           resizerSize="10px"
         >
-          <SearchLeft title="Your Channels" />
-          <SearchCenter />
+          <ChannelLeft />
+          <ChannelCenter />
         </ResizablePanels>
       </div>
     </>
   );
 };
 
-export default Channels;
+export default SearchChannel;

@@ -1,6 +1,6 @@
 import React from "react";
 
-const SearchLeft = ({ children, title }) => {
+const ChannelLeft = ({ children, title = "SubChannels" }) => {
   return (
     <div className="has-background-primary" style={{ height: "100%" }}>
       <div className="has-background-light">
@@ -10,7 +10,7 @@ const SearchLeft = ({ children, title }) => {
       </div>
       <div style={{ padding: "0.75rem" }}>
         <button className="button is-fullwidth is-light ">
-          Create New Channel
+          Join new SubChannel
         </button>
         <aside className="menu">
           <ul className="menu-list">
@@ -41,4 +41,4 @@ const SearchLeft = ({ children, title }) => {
   );
 };
 
-export default SearchLeft;
+export default ChannelLeft;

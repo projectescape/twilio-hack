@@ -2,9 +2,10 @@ import React, { useContext } from "react";
 import { Switch, Route } from "react-router-dom";
 import Context from "./context";
 import Landing from "./pages/Landing";
-import Channels from "./pages/Channels";
+import SearchChannel from "./pages/SearchChannel";
 import HandleLogin from "./components/HandleLogin";
 import Navbar from "./components/Navbar";
+import Channel from "./pages/Channel";
 
 const Routes = () => {
   const { profile } = useContext(Context);
@@ -26,7 +27,10 @@ const Routes = () => {
           height: "calc(100vh - 3.25rem - 4px)",
         }}
       >
-        <Channels />
+        <Switch>
+          <Channel />
+          <SearchChannel />
+        </Switch>
       </div>
 
       {/* <section
@@ -36,9 +40,7 @@ const Routes = () => {
           overflow: "hidden",
         }}
       >
-        <Switch>
           <Channels />
-        </Switch>
       </section> */}
     </>
   );
