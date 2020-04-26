@@ -1,8 +1,10 @@
 import React from "react";
 import BannerLeft from "../components/BannerLeft";
 import ChannelLeft from "../components/ChannelLeft";
-import ChannelCenter from "../components/ChannelCenter";
+import ChannelChat from "../components/ChannelChat";
 import ResizablePanels from "../components/ResizablePanelsReact";
+import ChannelSnippet from "../components/ChannelSnippet";
+import ChannelChecklist from "../components/ChannelCheckList";
 
 const SearchChannel = () => {
   return (
@@ -28,7 +30,9 @@ const SearchChannel = () => {
           resizerSize="10px"
         >
           <ChannelLeft />
-          <ChannelCenter />
+          {/* <ChannelChat /> */}
+          {/* <ChannelSnippet /> */}
+          <ChannelChecklist />
         </ResizablePanels>
       </div>
     </>
