@@ -35,6 +35,14 @@ const User = sequelize.define("user", {
   },
 });
 
-sequelize.sync();
+const Repo = sequelize.define("repo", {
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    primaryKey: true,
+  },
+});
 
-module.exports = { User };
+// sequelize.sync({ force: true });
+
+module.exports = { User, Repo, Op: Sequelize.Op };
