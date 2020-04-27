@@ -1,10 +1,11 @@
+// All routes not using twilio api go here
 const axios = require("axios");
-const { Repo, Op } = require("../services/db");
+const { Channel, Op, UserChannel, literal } = require("../services/db");
 const githubApiUrl = "https://api.github.com";
 
-// Write a Middleware for login
 module.exports = (app) => {
-  app.get("/api/myRepos", async (req, res) => {
+  // Current user's All repos
+  app.get("/api/repos", async (req, res) => {
     const { data } = await axios.get(
       `${githubApiUrl}/users/${req.user.username}/repos`
     );
@@ -14,25 +15,27 @@ module.exports = (app) => {
     res.send(repos);
   });
 
-  app.get("/api/myReposSubscribed", async (req, res) => {
-    let data = await Repo.findAll({
-      attributes: ["name"],
+  // Current user's created channels
+  app.get("/api/channels/created", async (req, res) => {
+    let data = await Channel.findAll({
+      attributes: ["channelName"],
       where: {
-        name: {
-          [Op.like]: `${req.user.username}#%#general`,
+        channelName: {
+          [Op.like]: `${req.user.username}~%~general`,
         },
       },
-      order: [["name", "ASC"]],
+      order: [["channelName", "ASC"]],
     });
 
-    data = data.map((repo) => repo.dataValues.name);
+    data = data.map((repo) => repo.dataValues.channelName);
 
     console.log(data);
 
     res.json(data);
   });
 
-  app.get("/api/myReposNonSubscribed", async (req, res) => {
+  // Current user's repos for which channel hasn't been created
+  app.get("/api/channels/notcreated", async (req, res) => {
     let allRepos = await axios.get(
       `${githubApiUrl}/users/${req.user.username}/repos`
     );
@@ -40,22 +43,24 @@ module.exports = (app) => {
       return repo.name;
     });
 
-    let subscribedRepos = await Repo.findAll({
-      attributes: ["name"],
+    let subscribedRepos = await Channel.findAll({
+      attributes: ["channelName"],
       where: {
-        name: {
-          [Op.like]: `${req.user.username}#%#general`,
+        channelName: {
+          [Op.like]: `${req.user.username}~%~general`,
         },
       },
-      order: [["name", "ASC"]],
+      order: [["channelName", "ASC"]],
     });
-    subscribedRepos = subscribedRepos.map((repo) => repo.dataValues.name);
+    subscribedRepos = subscribedRepos.map(
+      (repo) => repo.dataValues.channelName
+    );
 
     let i = 0;
 
     allRepos = allRepos.filter((repo) => {
       if (i >= subscribedRepos.length) return true;
-      if (subscribedRepos[i].split("#")[1] === repo) {
+      if (subscribedRepos[i].split("~")[1] === repo) {
         i++;
         return false;
       }
@@ -63,5 +68,88 @@ module.exports = (app) => {
     });
 
     res.send(allRepos);
+  });
+
+  // All General Channels created
+  app.get("/api/channels/all/general", async (req, res) => {
+    let data = await Channel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.like]: "%~%~general",
+        },
+      },
+      order: [["channelName", "ASC"]],
+    });
+
+    data = data.map((repo) => repo.dataValues.channelName);
+
+    console.log(data);
+
+    res.json(data);
+  });
+
+  // All general channels Subscribed including self
+  app.get("/api/channels/subscribed/all", async (req, res) => {
+    let data = await UserChannel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.like]: "%~%~general",
+        },
+        username: req.user.username,
+      },
+      order: [["channelName", "ASC"]],
+    });
+    data = data.map((repo) => repo.dataValues.channelName);
+
+    console.log(data);
+
+    res.json(data);
+  });
+
+  // All general channels Subscribed excluding self
+  app.get("/api/channels/subscribed", async (req, res) => {
+    let data = await UserChannel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.and]: {
+            [Op.like]: "%~%~general",
+            [Op.notLike]: `${req.user.username}~%`,
+          },
+        },
+        username: req.user.username,
+      },
+      order: [["channelName", "ASC"]],
+    });
+    data = data.map((repo) => repo.dataValues.channelName);
+
+    console.log(data);
+
+    res.json(data);
+  });
+
+  // All general channels Not Subscribed
+  app.get("/api/channels/nonsubscribed", async (req, res) => {
+    let data = await Channel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.and]: {
+            [Op.like]: "%~%~general",
+            [Op.notIn]: literal(
+              `(select uc."channelName" from "userchannels" uc where uc.username = '${req.user.username}' and uc."channelName" like '%~%~general' )`
+            ),
+          },
+        },
+      },
+      order: [["channelName", "ASC"]],
+    });
+    data = data.map((repo) => repo.dataValues.channelName);
+
+    console.log(data);
+
+    res.json(data);
   });
 };

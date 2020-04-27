@@ -7,8 +7,8 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-passport.deserializeUser(async ({ githubID, username }, done) => {
-  done(null, { githubID, username });
+passport.deserializeUser(async ({ username }, done) => {
+  done(null, { username });
 });
 
 passport.use(
@@ -20,14 +20,14 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       await User.findOrCreate({
-        where: { githubID: profile.id },
+        where: { username: profile.username },
         defaults: {
           displayName: profile.displayName,
-          username: profile.username,
+
           photo: profile.photos[0].value,
         },
       });
-      done(null, { githubID: profile.id, username: profile.username });
+      done(null, { username: profile.username });
     }
   )
 );

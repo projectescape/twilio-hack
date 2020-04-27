@@ -24,10 +24,6 @@ const User = sequelize.define("user", {
   username: {
     type: Sequelize.STRING,
     allowNull: false,
-  },
-  githubID: {
-    type: Sequelize.STRING,
-    allowNull: false,
     primaryKey: true,
   },
   photo: {
@@ -35,14 +31,62 @@ const User = sequelize.define("user", {
   },
 });
 
-const Repo = sequelize.define("repo", {
-  name: {
+const Channel = sequelize.define("channel", {
+  channelName: {
     type: Sequelize.STRING,
     allowNull: false,
     primaryKey: true,
   },
 });
 
-// sequelize.sync({ force: true });
+const UserChannel = sequelize.define("userchannel", {
+  username: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    primaryKey: true,
+  },
+  channelName: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    primaryKey: true,
+  },
+});
 
-module.exports = { User, Repo, Op: Sequelize.Op };
+UserChannel.belongsTo(User, {
+  foreignKey: "username",
+  targetKey: "username",
+  as: "user",
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+UserChannel.belongsTo(Channel, {
+  foreignKey: "channelName",
+  targetKey: "channelName",
+  as: "channel",
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+
+User.belongsToMany(Channel, {
+  through: UserChannel,
+  foreignKey: "username",
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Channel.belongsToMany(User, {
+  through: UserChannel,
+  foreignKey: "channelName",
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+
+// sequelize.sync({ force: true });
+sequelize.sync({});
+
+module.exports = {
+  User,
+  Channel,
+  UserChannel,
+  Op: Sequelize.Op,
+  literal: Sequelize.literal,
+};

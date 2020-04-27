@@ -1,3 +1,4 @@
+// All routes using twilio api go here
 const AccessToken = require("twilio").jwt.AccessToken;
 const ChatGrant = AccessToken.ChatGrant;
 const { twilioKeys } = require("../config/keys");
@@ -22,11 +23,11 @@ module.exports = (app) => {
 
     token.addGrant(chatGrant);
 
-    token.identity = req.user.githubID;
+    token.identity = req.user.username;
     res.send(token.toJwt());
   });
 
-  app.get("/twilio/channels", async (req, res) => {
+  app.get("/twilio/allChannels", async (req, res) => {
     const data = await twilioClient.chat
       .services("IS03f0f1d30c5943aca2539a2f6832e245")
       .channels.list();

@@ -33,6 +33,7 @@ app.get("/", (req, res) => {
 });
 
 require("./routes/authRoutes")(app);
+// Write a Middleware for login check
 require("./routes/twilioRoutes")(app);
 require("./routes/apiRoutes")(app);
 
