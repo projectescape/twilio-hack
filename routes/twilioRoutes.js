@@ -7,10 +7,10 @@ const twilioClient = require("twilio")(
   twilioKeys.authToken
 );
 
+const { Channel, Op, UserChannel } = require("../services/db");
+
 module.exports = (app) => {
   app.get("/twilio/token", (req, res) => {
-    if (!req.user) return res.redirect("/auth/github");
-
     const chatGrant = new ChatGrant({
       ...twilioKeys.chat,
     });
@@ -27,10 +27,54 @@ module.exports = (app) => {
     res.send(token.toJwt());
   });
 
-  app.get("/twilio/allChannels", async (req, res) => {
-    const data = await twilioClient.chat
-      .services("IS03f0f1d30c5943aca2539a2f6832e245")
-      .channels.list();
-    res.send(data);
+  app.post("/api/channels/create", async (req, res) => {
+    console.log(req.user.username);
+    console.log(req.body);
+
+    const channel = await twilioClient.chat
+      .services(twilioKeys.chat.serviceSid)
+      .channels.create({
+        friendlyName: "general",
+        uniqueName: `${req.user.username}~${req.body.repoName}~general`,
+        createdBy: req.user.username,
+      });
+
+    await twilioClient.chat
+      .services(twilioKeys.chat.serviceSid)
+      .channels(`${req.user.username}~${req.body.repoName}~general`)
+      .members.create({ identity: req.user.username });
+
+    await Channel.create({
+      channelName: `${req.user.username}~${req.body.repoName}~general`,
+    });
+
+    await UserChannel.create({
+      username: req.user.username,
+      channelName: `${req.user.username}~${req.body.repoName}~general`,
+    });
+
+    console.log(channel);
+    res.json(channel);
+  });
+
+  app.post("/api/channels/delete", async (req, res) => {
+    if (req.user.username !== req.body.channelName.split("~")[0]) {
+      return res.send("Not allowed");
+    }
+
+    const channel = await twilioClient.chat
+      .services(twilioKeys.chat.serviceSid)
+      .channels(req.body.channelName)
+      .remove();
+
+    if (channel) {
+      await Channel.destroy({
+        where: {
+          channelName: req.body.channelName,
+        },
+      });
+    }
+
+    res.send(channel);
   });
 };

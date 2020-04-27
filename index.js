@@ -28,14 +28,23 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/", (req, res) => {
-  res.send("Welcome to server");
-});
-
+const checkLogin = (req, res, next) => {
+  if (!req.user) {
+    res.redirect("/auth/github");
+  } else {
+    next();
+  }
+};
 require("./routes/authRoutes")(app);
-// Write a Middleware for login check
-require("./routes/twilioRoutes")(app);
+
+app.use(checkLogin);
+
 require("./routes/apiRoutes")(app);
+require("./routes/twilioRoutes")(app);
+
+app.get("/handleLogin", (req, res) => {
+  res.send("This is intended for client side");
+});
 
 // For deployment setup
 if (process.env.NODE_ENV === "production") {
