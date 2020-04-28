@@ -71,7 +71,7 @@ module.exports = (app) => {
   });
 
   // All General Channels created
-  app.get("/api/channels/all/general", async (req, res) => {
+  app.get("/api/channels/general/all", async (req, res) => {
     let data = await Channel.findAll({
       attributes: ["channelName"],
       where: {

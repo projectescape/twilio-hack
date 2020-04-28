@@ -77,4 +77,35 @@ module.exports = (app) => {
 
     res.send(channel);
   });
+
+  app.post("/api/channels/join", async (req, res) => {
+    const data = await twilioClient.chat
+      .services(twilioKeys.chat.serviceSid)
+      .channels(req.body.channelName)
+      .members.create({ identity: req.user.username });
+
+    await UserChannel.create({
+      username: req.user.username,
+      channelName: req.body.channelName,
+    });
+
+    res.send(data);
+  });
+
+  app.post("/api/channels/leave", async (req, res) => {
+    const data = await twilioClient.chat
+      .services(twilioKeys.chat.serviceSid)
+      .channels(req.body.channelName)
+      .members(req.user.username)
+      .remove();
+
+    await UserChannel.destroy({
+      where: {
+        username: req.user.username,
+        channelName: req.body.channelName,
+      },
+    });
+
+    res.send(data);
+  });
 };
