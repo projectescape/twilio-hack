@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const ChannelChat = ({ children, title = "SubChannel Name" }) => {
+const ChannelChat = ({ children, title = "SubChannel Name", toggleMode }) => {
   useEffect(() => {
     const chatWindow = window.document.getElementById("chat-window");
     const xH = chatWindow.scrollHeight;
@@ -15,7 +15,7 @@ const ChannelChat = ({ children, title = "SubChannel Name" }) => {
         flexDirection: "column",
       }}
     >
-      {renderTitle(title)}
+      {renderTitle(title, toggleMode)}
 
       {renderMessages(10)}
 
@@ -24,30 +24,52 @@ const ChannelChat = ({ children, title = "SubChannel Name" }) => {
   );
 };
 
-const renderTitle = (title) => {
+const renderTitle = (title, toggleMode) => {
   return (
-    <div
-      className="has-background-light"
-      style={{ display: "flex", justifyContent: "space-between" }}
-    >
-      <div>
+    <div className="has-background-light" style={{ display: "flex" }}>
+      <div style={{ flexGrow: 1 }}>
         <h1 className="subtitle is-3" style={{ padding: "0.7rem" }}>
           {title}
         </h1>
       </div>
-      <div className="buttons has-addons is-marginless">
-        <button className="button" style={{ height: "100%" }}>
-          <span className="icon">
-            <i className="fas fa-code"></i>{" "}
-          </span>
-          <span>Snippet</span>
-        </button>
-        <button className="button" style={{ height: "100%" }}>
-          <span className="icon">
-            <i className="fas fa-tasks"></i>{" "}
-          </span>
-          <span>CheckList</span>
-        </button>
+      <div
+        className="has-background-info"
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "1rem",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          toggleMode("snippet");
+        }}
+      >
+        <span className="icon">
+          <i className="fas fa-code"></i>
+        </span>
+        <span>Snippet</span>
+      </div>
+      <div
+        className="has-background-success"
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          paddingLeft: "1rem",
+          paddingRight: "1rem",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          toggleMode("checklist");
+        }}
+      >
+        <span className="icon">
+          <i className="fas fa-tasks"></i>{" "}
+        </span>
+        <span>CheckList</span>
       </div>
     </div>
   );

@@ -15,6 +15,23 @@ module.exports = (app) => {
     res.send(repos);
   });
 
+  // Get content of a directory of repo
+  // Temporarily post to avoid setting params on get request
+  app.post("/api/repos/content/", async (req, res) => {
+    const { data } = await axios.get(
+      `${githubApiUrl}/repos/${req.body.owner}/${req.body.repoName}/contents${req.body.path}`
+    );
+    res.send(
+      data.map((file) => {
+        return {
+          name: file.name,
+          path: file.path,
+          type: file.type,
+        };
+      })
+    );
+  });
+
   // Current user's created channels
   app.get("/api/channels/created", async (req, res) => {
     let data = await Channel.findAll({
@@ -153,6 +170,7 @@ module.exports = (app) => {
     res.json(data);
   });
 
+  // All general channels Not Subscribed with search
   app.get("/api/channels/nonsubscribed/search/:key", async (req, res) => {
     let data = await Channel.findAll({
       attributes: ["channelName"],
@@ -171,6 +189,24 @@ module.exports = (app) => {
     data = data.map((repo) => repo.dataValues.channelName);
 
     console.log(data);
+
+    res.json(data);
+  });
+
+  // All subchannels for a particular repo subscribed
+  app.get("/api/subchannels/subscribed/:owner/:repo", async (req, res) => {
+    let data = await UserChannel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.like]: `${req.params.owner}~${req.params.repo}~%`,
+        },
+        username: req.user.username,
+      },
+      order: [["channelName", "ASC"]],
+    });
+
+    data = data.map((channel) => channel.dataValues.channelName);
 
     res.json(data);
   });

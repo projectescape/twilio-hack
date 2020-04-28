@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import Context from "./context";
 import Landing from "./pages/Landing";
@@ -8,7 +8,13 @@ import Navbar from "./components/Navbar";
 import Channel from "./pages/Channel";
 
 const Routes = () => {
-  const { profile } = useContext(Context);
+  const { profile, handleLogin } = useContext(Context);
+
+  useEffect(() => {
+    if (profile === null) {
+      handleLogin();
+    }
+  }, []);
 
   if (profile === null) {
     return (
@@ -28,7 +34,7 @@ const Routes = () => {
         }}
       >
         <Switch>
-          <Route exact path="/channel/:id" component={Channel} />
+          <Route exact path="/channel/:owner/:repoName/" component={Channel} />
           <Search />
         </Switch>
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-const ChannelChecklist = ({ title = "CheckList" }) => {
+const ChannelChecklist = ({ title = "CheckList", toggleMode }) => {
   return (
     <div
       style={{
@@ -9,20 +9,17 @@ const ChannelChecklist = ({ title = "CheckList" }) => {
         flexDirection: "column",
       }}
     >
-      {renderTitle(title)}
+      {renderTitle(title, toggleMode)}
 
       {renderChecklist()}
     </div>
   );
 };
 
-const renderTitle = (title) => {
+const renderTitle = (title, toggleMode) => {
   return (
-    <div
-      className="has-background-light"
-      style={{ display: "flex", justifyContent: "space-between" }}
-    >
-      <div>
+    <div className="has-background-light" style={{ display: "flex" }}>
+      <div style={{ flexGrow: 1 }}>
         <h1 className="subtitle is-3" style={{ padding: "0.7rem" }}>
           {title}
         </h1>
@@ -36,7 +33,9 @@ const renderTitle = (title) => {
           justifyContent: "center",
           paddingLeft: "1rem",
           paddingRight: "1rem",
+          cursor: "pointer",
         }}
+        onClick={toggleMode}
       >
         <span className="icon">
           <i className="fas fa-2x fa-times"></i>

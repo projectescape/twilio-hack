@@ -12,10 +12,7 @@ const SearchLeft = ({ title, myChannels, currentAction, setCurrentAction }) => {
     >
       {renderTitle(title)}
       <div style={{ padding: "0.75rem" }}>
-        <button
-          className="button is-fullwidth is-light"
-          onClick={setCurrentAction}
-        >
+        <button className="button is-fullwidth" onClick={setCurrentAction}>
           {currentAction ? "Create New Channel" : "Join New Channel"}
         </button>
       </div>
@@ -51,12 +48,14 @@ const renderChannelList = (myChannels) => {
           </Link>
         </li>
         <li>
-          <a href="#">
+          <Link
+            to={`/channel/${channel.split("~")[0]}/${channel.split("~")[1]}`}
+          >
             <span className="icon is-small">
               <i className="fas fa-code-branch" />
             </span>
             {channel.split("~")[1]}
-          </a>
+          </Link>
         </li>
       </ul>
     </div>
