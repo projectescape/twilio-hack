@@ -21,9 +21,5 @@ const BannerLeft = ({ title }) => {
     </div>
   );
 };
-// return (
-//   <div style={{ width: "3rem", margin: "auto", position: "sticky" }}>
-//   </div>
-// );
 
 export default BannerLeft;

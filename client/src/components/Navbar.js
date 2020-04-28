@@ -15,7 +15,7 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="navbar-end">
-          {/* <div className="navbar-item">Welcome {profile.username}</div> */}
+          <div className="navbar-item">Welcome {profile.username}</div>
           <div className="navbar-item">
             <div className="buttons">
               <button

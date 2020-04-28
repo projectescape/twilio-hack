@@ -152,4 +152,26 @@ module.exports = (app) => {
 
     res.json(data);
   });
+
+  app.get("/api/channels/nonsubscribed/search/:key", async (req, res) => {
+    let data = await Channel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.and]: {
+            [Op.like]: `%${req.params.key}%~general`,
+            [Op.notIn]: literal(
+              `(select uc."channelName" from "userchannels" uc where uc.username = '${req.user.username}' and uc."channelName" like '%~%~general' )`
+            ),
+          },
+        },
+      },
+      order: [["channelName", "ASC"]],
+    });
+    data = data.map((repo) => repo.dataValues.channelName);
+
+    console.log(data);
+
+    res.json(data);
+  });
 };

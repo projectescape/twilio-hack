@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Switch, Route } from "react-router-dom";
 import Context from "./context";
 import Landing from "./pages/Landing";
-import SearchChannel from "./pages/SearchChannel";
+import Search from "./pages/Search";
 import HandleLogin from "./components/HandleLogin";
 import Navbar from "./components/Navbar";
 import Channel from "./pages/Channel";
@@ -10,14 +10,14 @@ import Channel from "./pages/Channel";
 const Routes = () => {
   const { profile } = useContext(Context);
 
-  // if (profile === null) {
-  //   return (
-  //     <Switch>
-  //       <Route exact path="/handleLogin" component={HandleLogin} />
-  //       <Landing />
-  //     </Switch>
-  //   );
-  // }
+  if (profile === null) {
+    return (
+      <Switch>
+        <Route exact path="/handleLogin" component={HandleLogin} />
+        <Landing />
+      </Switch>
+    );
+  }
 
   return (
     <>
@@ -28,20 +28,10 @@ const Routes = () => {
         }}
       >
         <Switch>
-          <Channel />
-          <SearchChannel />
+          <Route exact path="/channel/:id" component={Channel} />
+          <Search />
         </Switch>
       </div>
-
-      {/* <section
-        className="hero is-dark is-fullheight-with-navbar"
-        style={{
-          display: "flex",
-          overflow: "hidden",
-        }}
-      >
-          <Channels />
-      </section> */}
     </>
   );
 };

@@ -28,7 +28,7 @@ const renderTitle = (title) => {
         </h1>
       </div>
       <div
-        class="has-background-danger"
+        className="has-background-danger"
         style={{
           height: "100%",
           display: "flex",
@@ -38,8 +38,8 @@ const renderTitle = (title) => {
           paddingRight: "1rem",
         }}
       >
-        <span class="icon">
-          <i class="fas fa-2x fa-times"></i>
+        <span className="icon">
+          <i className="fas fa-2x fa-times"></i>
         </span>
       </div>
     </div>
@@ -57,12 +57,12 @@ const renderChecklist = () => {
         flexDirection: "column",
       }}
     >
-      <div class="field has-addons">
-        <div class="control  is-expanded">
-          <input class="input " type="text" placeholder="Add Item" />
+      <div className="field has-addons">
+        <div className="control  is-expanded">
+          <input className="input " type="text" placeholder="Add Item" />
         </div>
-        <div class="control">
-          <a class="button is-info">Add</a>
+        <div className="control">
+          <a className="button is-info">Add</a>
         </div>
       </div>
       <div
@@ -89,8 +89,8 @@ const renderCheckItems = (num) => {
         }}
       >
         <div>
-          <span class="icon is-large has-background-success">
-            <i class="far fa-lg fa-check-square"></i>
+          <span className="icon is-large has-background-success">
+            <i className="far fa-lg fa-check-square"></i>
           </span>
         </div>
         <div
@@ -108,8 +108,8 @@ const renderCheckItems = (num) => {
           Hello
         </div>
         <div>
-          <span class="icon is-large has-background-danger">
-            <i class="fas fa-lg fa-times"></i>
+          <span className="icon is-large has-background-danger">
+            <i className="fas fa-lg fa-times"></i>
           </span>
         </div>
       </div>

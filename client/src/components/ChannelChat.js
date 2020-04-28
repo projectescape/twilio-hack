@@ -35,16 +35,16 @@ const renderTitle = (title) => {
           {title}
         </h1>
       </div>
-      <div class="buttons has-addons is-marginless">
-        <button class="button" style={{ height: "100%" }}>
-          <span class="icon">
-            <i class="fas fa-code"></i>{" "}
+      <div className="buttons has-addons is-marginless">
+        <button className="button" style={{ height: "100%" }}>
+          <span className="icon">
+            <i className="fas fa-code"></i>{" "}
           </span>
           <span>Snippet</span>
         </button>
-        <button class="button" style={{ height: "100%" }}>
-          <span class="icon">
-            <i class="fas fa-tasks"></i>{" "}
+        <button className="button" style={{ height: "100%" }}>
+          <span className="icon">
+            <i className="fas fa-tasks"></i>{" "}
           </span>
           <span>CheckList</span>
         </button>
@@ -133,27 +133,27 @@ const renderMessages = (num) => {
 
 const renderInputField = () => {
   return (
-    <div class="field has-addons">
-      <div class="control is-expanded ">
+    <div className="field has-addons">
+      <div className="control is-expanded ">
         <textarea
-          class="textarea has-fixed-size"
+          className="textarea has-fixed-size"
           placeholder="Enter Message or code"
           rows="2"
         ></textarea>
       </div>
-      <div class="control">
-        <div class="">
+      <div className="control">
+        <div className="">
           <div>
-            <button class="button is-warning">
+            <button className="button is-warning">
               <span className="icon is-medium">
-                <i class="fas fa-code"></i>
+                <i className="fas fa-code"></i>
               </span>
             </button>
           </div>
           <div>
-            <button class="button is-info">
+            <button className="button is-info">
               <span className="icon is-medium">
-                <i class="fas fa-paper-plane"></i>
+                <i className="fas fa-paper-plane"></i>
               </span>
             </button>
           </div>
