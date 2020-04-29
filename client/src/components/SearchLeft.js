@@ -49,7 +49,9 @@ const renderChannelList = (myChannels) => {
         </li>
         <li>
           <Link
-            to={`/channel/${channel.split("~")[0]}/${channel.split("~")[1]}`}
+            to={`/channel/${channel.split("~")[0]}/${
+              channel.split("~")[1]
+            }/general`}
           >
             <span className="icon is-small">
               <i className="fas fa-code-branch" />

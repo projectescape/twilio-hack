@@ -21,7 +21,6 @@ const CreateSubChannel = ({ toggleMode }) => {
         }}
       >
         <SubChannelList />
-        {/* {renderRepos(result, username, searched)} */}
       </div>
     </div>
   );
@@ -55,41 +54,5 @@ const renderTitle = (title, toggleMode) => {
     </div>
   );
 };
-
-// const renderRepos = (path = "/") => {
-//   if (searched === false)
-//     return (
-//       <progress class="progress is-medium is-dark" max="100">
-//         45%
-//       </progress>
-//     );
-//   console.log("Rendering Repos");
-//   return result.map((repo) => (
-//     <div className="breadcrumb">
-//       <ul>
-//         <li className="is-active">
-//           <Link>
-//             <span className="icon is-small">
-//               <i className="fas fa-user" />
-//             </span>
-//             {username}
-//           </Link>
-//         </li>
-//         <li>
-//           <Link
-//             onClick={async () => {
-//               await axios.post("/api/channels/create", { repoName: repo });
-//             }}
-//           >
-//             <span className="icon is-small">
-//               <i className="fas fa-code-branch" />
-//             </span>
-//             {repo}
-//           </Link>
-//         </li>
-//       </ul>
-//     </div>
-//   ));
-// };
 
 export default CreateSubChannel;

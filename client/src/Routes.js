@@ -34,7 +34,11 @@ const Routes = () => {
         }}
       >
         <Switch>
-          <Route exact path="/channel/:owner/:repoName/" component={Channel} />
+          <Route
+            exact
+            path="/channel/:owner/:repoName/:subChannelName"
+            component={Channel}
+          />
           <Search />
         </Switch>
       </div>

@@ -64,7 +64,7 @@ module.exports = (app) => {
 
     const channel = await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
-      .channels(req.body.channelName)
+      .channels(req.body.channelName.replace(/\//g, "~"))
       .remove();
 
     if (channel) {
@@ -81,7 +81,7 @@ module.exports = (app) => {
   app.post("/api/channels/join", async (req, res) => {
     const data = await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
-      .channels(req.body.channelName)
+      .channels(req.body.channelName.replace(/\//g, "~"))
       .members.create({ identity: req.user.username });
 
     await UserChannel.create({
@@ -95,7 +95,7 @@ module.exports = (app) => {
   app.post("/api/channels/leave", async (req, res) => {
     const data = await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
-      .channels(req.body.channelName)
+      .channels(req.body.channelName.replace(/\//g, "~"))
       .members(req.user.username)
       .remove();
 
@@ -107,5 +107,41 @@ module.exports = (app) => {
     });
 
     res.send(data);
+  });
+
+  app.post("/api/subchannels/create", async (req, res) => {
+    const [dat, created] = await Channel.findOrCreate({
+      where: {
+        channelName: `${req.user.username}~${req.body.repoName}~${req.body.path}`,
+      },
+    });
+    console.log("created ", created);
+    if (created) {
+      await twilioClient.chat
+        .services(twilioKeys.chat.serviceSid)
+        .channels.create({
+          friendlyName: req.body.path,
+          uniqueName: `${req.user.username}~${
+            req.body.repoName
+          }~${req.body.path.replace(/\//g, "~")}`,
+          createdBy: req.user.username,
+        });
+
+      await twilioClient.chat
+        .services(twilioKeys.chat.serviceSid)
+        .channels(
+          `${req.user.username}~${req.body.repoName}~${req.body.path.replace(
+            /\//g,
+            "~"
+          )}`
+        )
+        .members.create({ identity: req.user.username });
+
+      await UserChannel.create({
+        username: req.user.username,
+        channelName: `${req.user.username}~${req.body.repoName}~${req.body.path}`,
+      });
+    }
+    res.json(created);
   });
 };

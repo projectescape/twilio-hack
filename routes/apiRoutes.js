@@ -4,10 +4,24 @@ const { Channel, Op, UserChannel, literal } = require("../services/db");
 const githubApiUrl = "https://api.github.com";
 
 module.exports = (app) => {
+  // Current user's Github info
+  app.get("/api/github/user", async (req, res) => {
+    const { data } = await axios.get(`${githubApiUrl}/user`, {
+      headers: {
+        Authorization: `token ${req.user.accessToken}`,
+      },
+    });
+    res.send(data);
+  });
   // Current user's All repos
   app.get("/api/repos", async (req, res) => {
     const { data } = await axios.get(
-      `${githubApiUrl}/users/${req.user.username}/repos`
+      `${githubApiUrl}/users/${req.user.username}/repos`,
+      {
+        headers: {
+          Authorization: `token ${req.user.accessToken}`,
+        },
+      }
     );
     const repos = data.map((repo) => {
       return repo.name;
@@ -19,7 +33,12 @@ module.exports = (app) => {
   // Temporarily post to avoid setting params on get request
   app.post("/api/repos/content/", async (req, res) => {
     const { data } = await axios.get(
-      `${githubApiUrl}/repos/${req.body.owner}/${req.body.repoName}/contents${req.body.path}`
+      `${githubApiUrl}/repos/${req.body.owner}/${req.body.repoName}/contents${req.body.path}`,
+      {
+        headers: {
+          Authorization: `token ${req.user.accessToken}`,
+        },
+      }
     );
     res.send(
       data.map((file) => {
@@ -54,7 +73,12 @@ module.exports = (app) => {
   // Current user's repos for which channel hasn't been created
   app.get("/api/channels/notcreated", async (req, res) => {
     let allRepos = await axios.get(
-      `${githubApiUrl}/users/${req.user.username}/repos`
+      `${githubApiUrl}/users/${req.user.username}/repos`,
+      {
+        headers: {
+          Authorization: `token ${req.user.accessToken}`,
+        },
+      }
     );
     allRepos = allRepos.data.map((repo) => {
       return repo.name;
@@ -199,7 +223,10 @@ module.exports = (app) => {
       attributes: ["channelName"],
       where: {
         channelName: {
-          [Op.like]: `${req.params.owner}~${req.params.repo}~%`,
+          [Op.and]: {
+            [Op.like]: `${req.params.owner}~${req.params.repo}~%`,
+            [Op.notLike]: `${req.params.owner}~${req.params.repo}~general`,
+          },
         },
         username: req.user.username,
       },

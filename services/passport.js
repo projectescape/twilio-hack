@@ -7,8 +7,8 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-passport.deserializeUser(async ({ username }, done) => {
-  done(null, { username });
+passport.deserializeUser(async ({ username, accessToken }, done) => {
+  done(null, { username, accessToken });
 });
 
 passport.use(
@@ -27,7 +27,7 @@ passport.use(
           photo: profile.photos[0].value,
         },
       });
-      done(null, { username: profile.username });
+      done(null, { username: profile.username, accessToken });
     }
   )
 );

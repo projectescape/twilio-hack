@@ -10,22 +10,23 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const SearchChannel = () => {
-  const { owner, repoName } = useParams();
-  const [subscribed, setSubscribed] = useState([]);
+  const { owner, repoName, subChannelName } = useParams();
+  const [subscribed, setSubscribed] = useState([
+    `${owner}~${repoName}~general`,
+  ]);
   const [createToggle, setCreateToggle] = useState(false);
-  const [subChannel, setSubChannel] = useState("general");
   const [viewMode, setViewMode] = useState("chat");
 
   useEffect(() => {
     axios
       .get(`/api/subchannels/subscribed/${owner}/${repoName}`)
       .then(({ data }) => {
-        setSubscribed(data);
+        setSubscribed([`${owner}~${repoName}~general`, ...data]);
       })
       .catch((e) => {
         console.log("error", e.message);
       });
-  }, [owner, repoName]);
+  }, [owner, repoName, subChannelName]);
 
   return (
     <>
@@ -51,7 +52,6 @@ const SearchChannel = () => {
           <ChannelLeft
             owner={owner}
             repoName={repoName}
-            subChannel={subChannel}
             myChannels={subscribed}
             setCreateToggle={() => setCreateToggle(!createToggle)}
           />
@@ -66,8 +66,6 @@ const SearchChannel = () => {
           ) : (
             <ChannelChat toggleMode={(mode) => setViewMode(mode)} />
           )}
-          {/* <ChannelChat /> */}
-          {/* <ChannelSnippet /> */}
         </ResizablePanels>
       </div>
     </>
