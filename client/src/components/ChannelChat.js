@@ -1,11 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
+import ChatInputField from "./ChatInputField";
+import ChannelChatItem from "./ChannelChatItem";
+import { useParams } from "react-router-dom";
 
-const ChannelChat = ({ children, title = "SubChannel Name", toggleMode }) => {
+const ChannelChat = ({
+  title = "SubChannel Name",
+  toggleMode,
+  messages,
+  currentChat,
+  toggleScroll,
+}) => {
+  const { owner, repoName, subChannelName } = useParams();
+
   useEffect(() => {
+    setTimeout(() => {
+      const chatWindow = window.document.getElementById("chat-window");
+      const xH = chatWindow.scrollHeight;
+      chatWindow.scrollTo(0, xH);
+    }, 2000);
+  }, [owner, repoName, subChannelName]);
+
+  useEffect(() => {
+    console.log("Scroll Down");
     const chatWindow = window.document.getElementById("chat-window");
     const xH = chatWindow.scrollHeight;
     chatWindow.scrollTo(0, xH);
-  }, []);
+  }, [toggleScroll]);
 
   return (
     <div
@@ -17,9 +37,28 @@ const ChannelChat = ({ children, title = "SubChannel Name", toggleMode }) => {
     >
       {renderTitle(title, toggleMode)}
 
-      {renderMessages(10)}
+      <div
+        style={{
+          overflowY: "auto",
+          paddingLeft: "2rem",
+          paddingRight: "2rem",
+          paddingTop: "1rem",
+          flexGrow: 1,
+          display: "flex",
+          justifyContent: "flex-end",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          id="chat-window"
+          className="disable-scrollbars"
+          style={{ overflow: "inherit" }}
+        >
+          {renderMessages(messages)}
+        </div>
+      </div>
 
-      {renderInputField()}
+      <ChatInputField currentChat={currentChat} />
     </div>
   );
 };
@@ -75,114 +114,22 @@ const renderTitle = (title, toggleMode) => {
   );
 };
 
-const renderMessages = (num) => {
-  const messages = [];
-  for (let i = 0; i < num; i++)
-    messages.push(
-      <>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            paddingBottom: "10px",
-          }}
-        >
-          <div
-            className="has-background-grey-lighter"
-            style={{ maxWidth: "70%", overflowWrap: "break-word" }}
-          >
-            <div
-              className="has-background-grey-light is-size-7"
-              style={{ padding: "3px" }}
-            >
-              <h1>userName</h1>
-            </div>
-            <div style={{ padding: "7px" }}>Message Sent</div>
-            <div className="has-background-grey-light is-size-7">
-              <h1 style={{ padding: "3px" }}>Time</h1>
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row-reverse",
-            paddingBottom: "10px",
-          }}
-        >
-          <div
-            className="has-background-grey-lighter"
-            style={{ maxWidth: "70%", overflowWrap: "break-word" }}
-          >
-            <div
-              className="has-background-grey-light is-size-7"
-              style={{ padding: "3px" }}
-            >
-              <h1>userName</h1>
-            </div>
-            <div style={{ padding: "7px" }}>Message Sent</div>
-            <div className="has-background-grey-light is-size-7">
-              <h1 style={{ padding: "3px" }}>Time</h1>
-            </div>
-          </div>
-        </div>
-      </>
+const renderMessages = (messages) => {
+  if (messages === null) {
+    return (
+      <progress class="progress is-medium is-dark" max="100">
+        45%
+      </progress>
     );
+  }
+  const ans = [];
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].attributes.type === "chat") {
+      ans.push(<ChannelChatItem message={messages[i]} />);
+    }
+  }
 
-  return (
-    <div
-      style={{
-        overflowY: "auto",
-        paddingLeft: "2rem",
-        paddingRight: "2rem",
-        paddingTop: "1rem",
-        flexGrow: 1,
-        display: "flex",
-        justifyContent: "flex-end",
-        flexDirection: "column",
-      }}
-    >
-      <div
-        id="chat-window"
-        className="disable-scrollbars"
-        style={{ overflow: "inherit" }}
-      >
-        {messages}
-      </div>
-    </div>
-  );
-};
-
-const renderInputField = () => {
-  return (
-    <div className="field has-addons">
-      <div className="control is-expanded ">
-        <textarea
-          className="textarea has-fixed-size"
-          placeholder="Enter Message or code"
-          rows="2"
-        ></textarea>
-      </div>
-      <div className="control">
-        <div className="">
-          <div>
-            <button className="button is-warning">
-              <span className="icon is-medium">
-                <i className="fas fa-code"></i>
-              </span>
-            </button>
-          </div>
-          <div>
-            <button className="button is-info">
-              <span className="icon is-medium">
-                <i className="fas fa-paper-plane"></i>
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return ans;
 };
 
 export default ChannelChat;

@@ -7,13 +7,13 @@ const Navbar = () => {
   const history = useHistory();
 
   return (
-    <>
-      <nav className="navbar is-dark" aria-label="main navigation">
-        <div className="navbar-start">
-          <Link to="/" className="navbar-item">
-            <div className="title is-4 has-text-white-bis">Git Talking</div>
-          </Link>
-        </div>
+    <nav className="navbar is-dark" aria-label="main navigation">
+      <div className="navbar-start">
+        <Link to="/" className="navbar-item">
+          <div className="title is-4 has-text-white-bis">Git Talking</div>
+        </Link>
+      </div>
+      <div className="navbar-menu">
         <div className="navbar-end">
           <div className="navbar-item">Welcome {profile.username}</div>
           <div className="navbar-item">
@@ -31,8 +31,8 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 };
 export default Navbar;

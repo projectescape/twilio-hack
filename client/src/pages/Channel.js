@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import BannerLeft from "../components/BannerLeft";
 import ChannelLeft from "../components/ChannelLeft";
 import ChannelChat from "../components/ChannelChat";
@@ -8,15 +8,40 @@ import ChannelChecklist from "../components/ChannelCheckList";
 import CreateSubChannel from "../components/CreateSubChannel";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Context from "../context";
+
+const messagesReducer = (state, action) => {
+  switch (action.type) {
+    case "setMessages":
+      return action.payload;
+
+    case "addNewMessage":
+      return [...state, action.payload];
+
+    default:
+      return state;
+  }
+};
 
 const SearchChannel = () => {
+  // Fetch gloabal profile and chatClient
+  const { profile, chatClient } = useContext(Context);
+
+  // Get link parameters
   const { owner, repoName, subChannelName } = useParams();
+
+  // Get list of subscribed channels for the repo
   const [subscribed, setSubscribed] = useState([
     `${owner}~${repoName}~general`,
   ]);
+
+  // Toggle for create subChannel
   const [createToggle, setCreateToggle] = useState(false);
+
+  // For current viewmode chat/snippet/todo
   const [viewMode, setViewMode] = useState("chat");
 
+  // For retreiving subscribed subchannels
   useEffect(() => {
     axios
       .get(`/api/subchannels/subscribed/${owner}/${repoName}`)
@@ -27,6 +52,72 @@ const SearchChannel = () => {
         console.log("error", e.message);
       });
   }, [owner, repoName, subChannelName]);
+
+  const [currentChat, setCurrentChat] = useState(null);
+
+  const [messages, messagesDispatch] = useReducer(messagesReducer, null);
+
+  const [toggleScroll, setToggleScroll] = useReducer((state) => {
+    return !state;
+  }, true);
+
+  const setMessages = (payload) => {
+    return messagesDispatch({ type: "setMessages", payload });
+  };
+
+  const addNewMessage = (payload) => {
+    messagesDispatch({ type: "addNewMessage", payload });
+    setToggleScroll(!toggleScroll);
+  };
+
+  const [prev, setPrev] = useState(null);
+
+  const handleMessage = ({ state }) => {
+    console.log("Handle Message", state);
+    addNewMessage(state);
+  };
+
+  // For adding message listener
+  useEffect(() => {
+    let currentChat = null;
+    console.log("creating currentChat");
+    chatClient
+      .getChannelByUniqueName(`${owner}~${repoName}~${subChannelName}`)
+      .then((channel) => {
+        setCurrentChat(channel);
+        currentChat = channel;
+        channel.on("messageAdded", handleMessage);
+        console.log("Adding Listener");
+      });
+    return () => {
+      console.log("Removing Listener", currentChat);
+
+      currentChat.removeListener("messageAdded", () => {});
+      currentChat.removeAllListeners();
+      console.log("Removed");
+      setCurrentChat(null);
+    };
+  }, [owner, repoName, subChannelName]);
+
+  // For Getting Messages
+  useEffect(() => {
+    if (currentChat === null) {
+      return;
+    } else {
+      currentChat.getMessages().then((messages) => {
+        setMessages(messages.items.map((i) => i.state));
+        setPrev({
+          hasPrevPage: messages.hasPrevPage,
+          prevPage: messages.prevPage,
+        });
+        console.log(messages);
+      });
+      return () => {
+        setMessages(null);
+        setPrev(null);
+      };
+    }
+  }, [currentChat]);
 
   return (
     <>
@@ -60,11 +151,22 @@ const SearchChannel = () => {
               toggleMode={() => setCreateToggle(!createToggle)}
             />
           ) : viewMode === "snippet" ? (
-            <ChannelSnippet toggleMode={() => setViewMode("chat")} />
+            <ChannelSnippet
+              toggleMode={() => setViewMode("chat")}
+              currentChat={currentChat}
+            />
           ) : viewMode === "checklist" ? (
-            <ChannelChecklist toggleMode={() => setViewMode("chat")} />
+            <ChannelChecklist
+              toggleMode={() => setViewMode("chat")}
+              currentChat={currentChat}
+            />
           ) : (
-            <ChannelChat toggleMode={(mode) => setViewMode(mode)} />
+            <ChannelChat
+              toggleMode={(mode) => setViewMode(mode)}
+              messages={messages}
+              currentChat={currentChat}
+              toggleScroll={toggleScroll}
+            />
           )}
         </ResizablePanels>
       </div>
