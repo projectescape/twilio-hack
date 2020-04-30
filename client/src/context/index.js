@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useReducer } from "react";
 import { Client as twilioChat } from "twilio-chat";
+import twilioSync from "twilio-sync";
 
 const Context = React.createContext();
 
@@ -20,6 +21,7 @@ export const Provider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, {
     profile: null,
     chatClient: null,
+    syncClient: null,
   });
 
   const fetchProfile = async () => {
@@ -31,13 +33,17 @@ export const Provider = ({ children }) => {
     const profile = await axios.get("/auth/current_user");
     const { data } = await axios.get("/twilio/token");
     const chatClient = await twilioChat.create(data);
-    chatClient.on("tokenAboutToExpire", () => updateToken(chatClient));
+    const syncClient = await twilioSync.create(data);
+    chatClient.on("tokenAboutToExpire", () =>
+      updateToken(chatClient, syncClient)
+    );
     console.log("chatClient", chatClient);
     dispatch({
       type: "handleLogin",
       payload: {
         profile: profile.data,
         chatClient,
+        syncClient,
       },
     });
   };
@@ -53,9 +59,10 @@ export const Provider = ({ children }) => {
     });
   };
 
-  const updateToken = async (chatClient) => {
+  const updateToken = async (chatClient, syncClient) => {
     const { data } = await axios.get("/twilio/token");
     chatClient.updateToken(data);
+    syncClient.updateToken(data);
   };
 
   return (

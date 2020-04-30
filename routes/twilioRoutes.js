@@ -1,6 +1,7 @@
 // All routes using twilio api go here
 const AccessToken = require("twilio").jwt.AccessToken;
 const ChatGrant = AccessToken.ChatGrant;
+const SyncGrant = AccessToken.SyncGrant;
 const { twilioKeys } = require("../config/keys");
 const twilioClient = require("twilio")(
   twilioKeys.accountSid,
@@ -15,6 +16,10 @@ module.exports = (app) => {
       ...twilioKeys.chat,
     });
 
+    const syncGrant = new SyncGrant({
+      ...twilioKeys.sync,
+    });
+
     const token = new AccessToken(
       twilioKeys.accountSid,
       twilioKeys.apiKey,
@@ -22,6 +27,7 @@ module.exports = (app) => {
     );
 
     token.addGrant(chatGrant);
+    token.addGrant(syncGrant);
 
     token.identity = req.user.username;
     res.send(token.toJwt());
@@ -37,6 +43,19 @@ module.exports = (app) => {
         friendlyName: "general",
         uniqueName: `${req.user.username}~${req.body.repoName}~general`,
         createdBy: req.user.username,
+      });
+
+    await twilioClient.sync
+      .services(twilioKeys.sync.serviceSid)
+      .documents.create({
+        uniqueName: `${req.user.username}~${req.body.repoName}~general~snippet`,
+        data: { value: "" },
+      });
+    await twilioClient.sync
+      .services(twilioKeys.sync.serviceSid)
+      .documents.create({
+        uniqueName: `${req.user.username}~${req.body.repoName}~general~checklist`,
+        data: { items: [] },
       });
 
     await twilioClient.chat
@@ -65,6 +84,15 @@ module.exports = (app) => {
     const channel = await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
       .channels(req.body.channelName.replace(/\//g, "~"))
+      .remove();
+
+    await twilioClient.sync
+      .services(twilioKeys.sync.serviceSid)
+      .documents(`${req.body.channelName.replace(/\//g, "~")}~snippet`)
+      .remove();
+    await twilioClient.sync
+      .services(twilioKeys.sync.serviceSid)
+      .documents(`${req.body.channelName.replace(/\//g, "~")}~checklist`)
       .remove();
 
     if (channel) {
@@ -136,6 +164,23 @@ module.exports = (app) => {
           )}`
         )
         .members.create({ identity: req.user.username });
+
+      await twilioClient.sync
+        .services(twilioKeys.sync.serviceSid)
+        .documents.create({
+          uniqueName: `${req.user.username}~${
+            req.body.repoName
+          }~${req.body.path.replace(/\//g, "~")}~snippet`,
+          data: { value: "" },
+        });
+      await twilioClient.sync
+        .services(twilioKeys.sync.serviceSid)
+        .documents.create({
+          uniqueName: `${req.user.username}~${
+            req.body.repoName
+          }~${req.body.path.replace(/\//g, "~")}~checklist`,
+          data: { items: [] },
+        });
 
       await UserChannel.create({
         username: req.user.username,
