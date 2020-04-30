@@ -1,12 +1,16 @@
 import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
-const SearchChannel = ({ title = "Join Channels" }) => {
+const SearchChannel = () => {
   const [result, setResult] = useState([]);
   const [inputVal, setInputVal] = useState("");
-
-  const repoList = useMemo(() => renderRepos(result), [result]);
+  const [showProgress, setShowProgress] = useState(false);
+  const history = useHistory();
+  const repoList = useMemo(
+    () => renderRepos(result, history, setShowProgress),
+    [result]
+  );
 
   return (
     <div
@@ -16,7 +20,7 @@ const SearchChannel = ({ title = "Join Channels" }) => {
         flexDirection: "column",
       }}
     >
-      {renderTitle(title)}
+      {renderTitle("Join Channels")}
       <div
         className="columns"
         style={{ padding: "1rem", marginBottom: "0", paddingBottom: "0" }}
@@ -30,6 +34,22 @@ const SearchChannel = ({ title = "Join Channels" }) => {
               value={inputVal}
               onChange={(e) => {
                 setInputVal(e.target.value);
+              }}
+              onKeyPress={async (e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (inputVal === "") {
+                    const { data } = await axios.get(
+                      `/api/channels/nonsubscribed`
+                    );
+                    setResult(data);
+                  } else {
+                    const { data } = await axios.get(
+                      `/api/channels/nonsubscribed/search/${inputVal}`
+                    );
+                    setResult(data);
+                  }
+                }
               }}
             />
           </div>
@@ -53,6 +73,11 @@ const SearchChannel = ({ title = "Join Channels" }) => {
           </button>
         </div>
       </div>
+      {showProgress ? (
+        <progress className="progress is-medium is-dark" max="100">
+          45%
+        </progress>
+      ) : null}
       <div
         style={{
           padding: "1rem",
@@ -76,7 +101,7 @@ const renderTitle = (title) => {
   );
 };
 
-const renderRepos = (result) => {
+const renderRepos = (result, history, setShowProgress) => {
   console.log("Rendering Repos");
   return result.map((repo) => (
     <div className="breadcrumb">
@@ -92,7 +117,13 @@ const renderRepos = (result) => {
         <li>
           <Link
             onClick={async () => {
+              setShowProgress(true);
               await axios.post("/api/channels/join", { channelName: repo });
+              history.push(
+                `/channel/${repo.split("~")[0]}/${repo.split("~")[1]}/${
+                  repo.split("~")[2]
+                }`
+              );
             }}
           >
             <span className="icon is-small">

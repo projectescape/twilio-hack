@@ -25,7 +25,7 @@ const messagesReducer = (state, action) => {
 
 const SearchChannel = () => {
   // Fetch gloabal profile and chatClient
-  const { profile, chatClient } = useContext(Context);
+  const { profile, chatClient, syncClient } = useContext(Context);
 
   // Get link parameters
   const { owner, repoName, subChannelName } = useParams();
@@ -53,9 +53,15 @@ const SearchChannel = () => {
       });
   }, [owner, repoName, subChannelName]);
 
+  // State contaning handlers for mutating, listening
   const [currentChat, setCurrentChat] = useState(null);
+  const [currentSnippet, setCurrentSnippet] = useState(null);
+  const [currentCheckList, setCurrentChecklist] = useState(null);
 
+  // State containing values
   const [messages, messagesDispatch] = useReducer(messagesReducer, null);
+  const [snippet, setSnippet] = useState(null);
+  const [checklist, setChecklist] = useState(null);
 
   const [toggleScroll, setToggleScroll] = useReducer((state) => {
     return !state;
@@ -77,9 +83,25 @@ const SearchChannel = () => {
     addNewMessage(state);
   };
 
-  // For adding message listener
+  const handleSnippet = (s) => {
+    console.log("Handling Snippet", s);
+    setSnippet(s.value);
+  };
+  const handleCheckList = (s) => {
+    console.log("Handling CheckList", s);
+    setChecklist(s.value);
+  };
+
+  // For adding message,sync listener
   useEffect(() => {
+    setMessages(null);
+    setPrev(null);
+    setCurrentChat(null);
+    setCurrentChecklist(null);
+    setCurrentSnippet(null);
     let currentChat = null;
+    let currentSnippet = null;
+    let currentCheckList = null;
     console.log("creating currentChat");
     chatClient
       .getChannelByUniqueName(`${owner}~${repoName}~${subChannelName}`)
@@ -88,36 +110,45 @@ const SearchChannel = () => {
         currentChat = channel;
         channel.on("messageAdded", handleMessage);
         console.log("Adding Listener");
+
+        console.log("Getting Messages");
+        currentChat.getMessages().then((messages) => {
+          setMessages(messages.items.map((i) => i.state));
+          setPrev({
+            hasPrevPage: messages.hasPrevPage,
+            prevPage: messages.prevPage,
+          });
+        });
+      });
+    console.log("creating Syncs");
+    syncClient
+      .document(`${owner}~${repoName}~${subChannelName}~snippet`)
+      .then((doc) => {
+        console.log("Check if snippet null", doc);
+        setCurrentSnippet(doc);
+        currentSnippet = doc;
+        doc.on("updated", handleSnippet);
+        setSnippet(doc.value);
+      });
+    syncClient
+      .document(`${owner}~${repoName}~${subChannelName}~checklist`)
+      .then((doc) => {
+        setCurrentChecklist(doc);
+        currentCheckList = doc;
+        doc.on("updated", handleCheckList);
+        setChecklist(doc.value);
       });
     return () => {
       console.log("Removing Listener", currentChat);
-
       currentChat.removeListener("messageAdded", () => {});
       currentChat.removeAllListeners();
+      currentSnippet.removeListener("updated", () => {});
+      currentSnippet.removeAllListeners();
+      currentCheckList.removeListener("updated", () => {});
+      currentCheckList.removeAllListeners();
       console.log("Removed");
-      setCurrentChat(null);
     };
   }, [owner, repoName, subChannelName]);
-
-  // For Getting Messages
-  useEffect(() => {
-    if (currentChat === null) {
-      return;
-    } else {
-      currentChat.getMessages().then((messages) => {
-        setMessages(messages.items.map((i) => i.state));
-        setPrev({
-          hasPrevPage: messages.hasPrevPage,
-          prevPage: messages.prevPage,
-        });
-        console.log(messages);
-      });
-      return () => {
-        setMessages(null);
-        setPrev(null);
-      };
-    }
-  }, [currentChat]);
 
   return (
     <>
@@ -154,11 +185,15 @@ const SearchChannel = () => {
             <ChannelSnippet
               toggleMode={() => setViewMode("chat")}
               currentChat={currentChat}
+              currentSnippet={currentSnippet}
+              snippet={snippet}
             />
           ) : viewMode === "checklist" ? (
             <ChannelChecklist
               toggleMode={() => setViewMode("chat")}
               currentChat={currentChat}
+              currentCheckList={currentCheckList}
+              checklist={checklist}
             />
           ) : (
             <ChannelChat

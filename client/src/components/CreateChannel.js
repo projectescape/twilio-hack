@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
 const CreateChannel = ({ title = "Create Channels", username }) => {
   const [result, setResult] = useState([]);
   const [searched, setSearched] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
+
+  const history = useHistory();
 
   useEffect(() => {
     axios.get("/api/channels/notcreated").then(({ data }) => {
@@ -22,6 +25,11 @@ const CreateChannel = ({ title = "Create Channels", username }) => {
       }}
     >
       {renderTitle(title)}
+      {showProgress ? (
+        <progress className="progress is-medium is-dark" max="100">
+          45%
+        </progress>
+      ) : null}
       <div
         style={{
           padding: "1rem",
@@ -29,7 +37,7 @@ const CreateChannel = ({ title = "Create Channels", username }) => {
           flexGrow: 1,
         }}
       >
-        {renderRepos(result, username, searched)}
+        {renderRepos(result, username, searched, history, setShowProgress)}
       </div>
     </div>
   );
@@ -45,10 +53,10 @@ const renderTitle = (title) => {
   );
 };
 
-const renderRepos = (result, username, searched) => {
+const renderRepos = (result, username, searched, history, setShowProgress) => {
   if (searched === false)
     return (
-      <progress class="progress is-medium is-dark" max="100">
+      <progress className="progress is-medium is-dark" max="100">
         45%
       </progress>
     );
@@ -67,7 +75,9 @@ const renderRepos = (result, username, searched) => {
         <li>
           <Link
             onClick={async () => {
+              setShowProgress(true);
               await axios.post("/api/channels/create", { repoName: repo });
+              history.push(`/channel/${username}/${repo}/general`);
             }}
           >
             <span className="icon is-small">

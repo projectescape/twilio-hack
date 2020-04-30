@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import BannerLeft from "../components/BannerLeft";
 import SearchLeft from "../components/SearchLeft";
-import SearchCenter from "../components/SearchChannel";
+import SearchChannel from "../components/SearchChannel";
 import ResizablePanels from "../components/ResizablePanelsReact";
 import axios from "axios";
 import Context from "../context";
 import CreateChannel from "../components/CreateChannel";
 
 const Search = () => {
-  const [currentAction, setCurrentAction] = useState(true);
-
   const { profile } = useContext(Context);
 
+  const [currentAction, setCurrentAction] = useState(true);
   const [myChannels, setMyChannels] = useState([]);
 
   useEffect(() => {
@@ -21,6 +20,17 @@ const Search = () => {
       setMyChannels(data);
     })();
   }, []);
+
+  const searchLeft = useMemo(
+    () => (
+      <SearchLeft
+        myChannels={myChannels}
+        currentAction={currentAction}
+        setCurrentAction={() => setCurrentAction(!currentAction)}
+      />
+    ),
+    [myChannels, currentAction]
+  );
 
   return (
     <>
@@ -43,14 +53,15 @@ const Search = () => {
           resizerColor="#353b48"
           resizerSize="10px"
         >
-          <SearchLeft
+          {/* <SearchLeft
             title="Your Channels"
             myChannels={myChannels}
             currentAction={currentAction}
             setCurrentAction={() => setCurrentAction(!currentAction)}
-          />
+          /> */}
+          {searchLeft}
           {currentAction ? (
-            <SearchCenter />
+            <SearchChannel />
           ) : (
             <CreateChannel username={profile.username} />
           )}

@@ -1,7 +1,8 @@
 import React, { useEffect, useContext } from "react";
 import ChatInputField from "./ChatInputField";
-import ChannelChatItem from "./ChannelChatItem";
+import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
+import Context from "../context";
 
 const ChannelChat = ({
   title = "SubChannel Name",
@@ -11,20 +12,24 @@ const ChannelChat = ({
   toggleScroll,
 }) => {
   const { owner, repoName, subChannelName } = useParams();
+  const { profile } = useContext(Context);
 
   useEffect(() => {
     setTimeout(() => {
       const chatWindow = window.document.getElementById("chat-window");
-      const xH = chatWindow.scrollHeight;
-      chatWindow.scrollTo(0, xH);
+      if (chatWindow !== null) {
+        const xH = chatWindow.scrollHeight;
+        chatWindow.scrollTo(0, xH);
+      }
     }, 2000);
   }, [owner, repoName, subChannelName]);
 
   useEffect(() => {
-    console.log("Scroll Down");
     const chatWindow = window.document.getElementById("chat-window");
-    const xH = chatWindow.scrollHeight;
-    chatWindow.scrollTo(0, xH);
+    if (chatWindow !== null) {
+      const xH = chatWindow.scrollHeight;
+      chatWindow.scrollTo(0, xH);
+    }
   }, [toggleScroll]);
 
   return (
@@ -49,12 +54,8 @@ const ChannelChat = ({
           flexDirection: "column",
         }}
       >
-        <div
-          id="chat-window"
-          className="disable-scrollbars"
-          style={{ overflow: "inherit" }}
-        >
-          {renderMessages(messages)}
+        <div id="chat-window" style={{ overflow: "inherit" }}>
+          {renderMessages(messages, profile)}
         </div>
       </div>
 
@@ -75,9 +76,6 @@ const renderTitle = (title, toggleMode) => {
         className="has-background-info"
         style={{
           height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
           padding: "1rem",
           cursor: "pointer",
         }}
@@ -88,17 +86,13 @@ const renderTitle = (title, toggleMode) => {
         <span className="icon">
           <i className="fas fa-code"></i>
         </span>
-        <span>Snippet</span>
+        <span style={{ paddingLeft: "0.5rem" }}>Snippet</span>
       </div>
       <div
         className="has-background-success"
         style={{
           height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          paddingLeft: "1rem",
-          paddingRight: "1rem",
+          padding: "1rem",
           cursor: "pointer",
         }}
         onClick={() => {
@@ -108,13 +102,13 @@ const renderTitle = (title, toggleMode) => {
         <span className="icon">
           <i className="fas fa-tasks"></i>{" "}
         </span>
-        <span>CheckList</span>
+        <span style={{ paddingLeft: "0.5rem" }}>CheckList</span>
       </div>
     </div>
   );
 };
 
-const renderMessages = (messages) => {
+const renderMessages = (messages, profile) => {
   if (messages === null) {
     return (
       <progress class="progress is-medium is-dark" max="100">
@@ -125,7 +119,44 @@ const renderMessages = (messages) => {
   const ans = [];
   for (let i = 0; i < messages.length; i++) {
     if (messages[i].attributes.type === "chat") {
-      ans.push(<ChannelChatItem message={messages[i]} />);
+      ans.push(
+        <div
+          key={messages[i].sid}
+          style={{
+            display: "flex",
+            flexDirection:
+              messages[i].author === profile.username ? "row-reverse" : "row",
+            paddingBottom: "10px",
+          }}
+        >
+          <div
+            className="has-background-grey-lighter"
+            style={{
+              maxWidth: "70%",
+              minWidth: "10%",
+              overflowWrap: "break-word",
+            }}
+          >
+            <div
+              className="has-background-grey-light is-size-7"
+              style={{ padding: "3px" }}
+            >
+              <h1>{messages[i].author}</h1>
+            </div>
+            <div style={{ padding: "7px" }}>
+              {messages[i].body.split("\n").map((item, i) => (
+                <p key={i}>{item}</p>
+              ))}
+            </div>
+
+            <div className="has-background-grey-light is-size-7">
+              <h1 style={{ padding: "3px" }}>
+                {dayjs(messages[i].timestamp).format("h mm a")}
+              </h1>
+            </div>
+          </div>
+        </div>
+      );
     }
   }
 

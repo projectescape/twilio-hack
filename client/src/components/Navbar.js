@@ -15,7 +15,10 @@ const Navbar = () => {
       </div>
       <div className="navbar-menu">
         <div className="navbar-end">
-          <div className="navbar-item">Welcome {profile.username}</div>
+          <div className="navbar-item">
+            Welcome{" "}
+            {profile.displayName ? profile.displayName : profile.username}
+          </div>
           <div className="navbar-item">
             <div className="buttons">
               <button

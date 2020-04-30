@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const SearchLeft = ({ title, myChannels, currentAction, setCurrentAction }) => {
+const SearchLeft = ({ myChannels, currentAction, setCurrentAction }) => {
   return (
     <div
       style={{
@@ -10,7 +10,7 @@ const SearchLeft = ({ title, myChannels, currentAction, setCurrentAction }) => {
         flexDirection: "column",
       }}
     >
-      {renderTitle(title)}
+      {renderTitle("Your Channels")}
       <div style={{ padding: "0.75rem" }}>
         <button className="button is-fullwidth" onClick={setCurrentAction}>
           {currentAction ? "Create New Channel" : "Join New Channel"}

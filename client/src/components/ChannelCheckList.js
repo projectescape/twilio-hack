@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import uuid from "react-uuid";
 
-const ChannelChecklist = ({ title = "CheckList", toggleMode }) => {
+const ChannelChecklist = ({
+  toggleMode,
+  currentChat,
+  currentCheckList,
+  checklist,
+}) => {
+  const [inputVal, setInputVal] = useState("");
   return (
     <div
       style={{
@@ -9,9 +16,68 @@ const ChannelChecklist = ({ title = "CheckList", toggleMode }) => {
         flexDirection: "column",
       }}
     >
-      {renderTitle(title, toggleMode)}
+      {renderTitle("CheckList", toggleMode)}
 
-      {renderChecklist()}
+      <div
+        className="columns"
+        style={{ padding: "1rem", marginBottom: "0", paddingBottom: "0" }}
+      >
+        <div className="column is-10">
+          <div className="control ">
+            <input
+              className="input"
+              type="text"
+              placeholder="Add to list"
+              value={inputVal}
+              onChange={(e) => {
+                setInputVal(e.target.value);
+              }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (inputVal !== "") {
+                    currentCheckList.update({
+                      items: [
+                        {
+                          key: uuid(),
+                          body: inputVal,
+                          checked: false,
+                        },
+                        ...checklist.items,
+                      ],
+                    });
+                    setInputVal("");
+                  }
+                }
+              }}
+            />
+          </div>
+        </div>
+        <div className="column is-2">
+          <button
+            className="button is-fullwidth"
+            onClick={() => {
+              if (inputVal !== "") {
+                currentCheckList.update({
+                  items: [
+                    {
+                      key: uuid(),
+                      body: inputVal,
+                      checked: false,
+                    },
+                    ...checklist.items,
+                  ],
+                });
+                setInputVal("");
+              }
+            }}
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      {renderChecklist(checklist.items, currentCheckList, currentChat)}
     </div>
   );
 };
@@ -45,76 +111,82 @@ const renderTitle = (title, toggleMode) => {
   );
 };
 
-const renderChecklist = () => {
+const renderChecklist = (items, currentCheckList, currentChat) => {
   return (
     <div
       style={{
         height: "100%",
         padding: "1rem",
-        border: "2px solid red",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <div className="field has-addons">
-        <div className="control  is-expanded">
-          <input className="input " type="text" placeholder="Add Item" />
-        </div>
-        <div className="control">
-          <a className="button is-info">Add</a>
-        </div>
-      </div>
       <div
         style={{
           flexGrow: 1,
-          overflow: "scroll",
+          overflowY: "auto",
         }}
       >
-        {renderCheckItems(20)}
+        {items !== undefined
+          ? items.map((item, i) => {
+              return (
+                <div
+                  className={i % 2 === 0 ? "has-background-light" : ""}
+                  key={item.key}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                  }}
+                >
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      currentCheckList.update({
+                        items: items.map((i) => {
+                          if (i.key !== item.key) return i;
+                          return { ...i, checked: !i.checked };
+                        }),
+                      });
+                    }}
+                  >
+                    <span className="icon is-large has-background-success">
+                      <i className="far fa-lg fa-check-square"></i>
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      flexGrow: "1",
+                      padding: "auto",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      paddingLeft: "1rem",
+                      paddingRight: "1rem",
+                      fontSize: "1.33em",
+                      textDecoration: item.checked ? "line-through" : "",
+                    }}
+                  >
+                    {item.body}
+                  </div>
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      currentCheckList.update({
+                        items: items.filter((i) => i.key !== item.key),
+                      });
+                    }}
+                  >
+                    <span className="icon is-large has-background-danger">
+                      <i className="fas fa-lg fa-times"></i>
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          : null}
       </div>
     </div>
   );
-};
-
-const renderCheckItems = (num) => {
-  const items = [];
-  for (let i = 0; i < num; i++) {
-    items.push(
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          borderBottom: "2px solid #bbb",
-        }}
-      >
-        <div>
-          <span className="icon is-large has-background-success">
-            <i className="far fa-lg fa-check-square"></i>
-          </span>
-        </div>
-        <div
-          style={{
-            flexGrow: "1",
-            padding: "auto",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            paddingLeft: "1rem",
-            paddingRight: "1rem",
-            fontSize: "1.33em",
-          }}
-        >
-          Hello
-        </div>
-        <div>
-          <span className="icon is-large has-background-danger">
-            <i className="fas fa-lg fa-times"></i>
-          </span>
-        </div>
-      </div>
-    );
-  }
-  return items;
 };
 
 export default ChannelChecklist;

@@ -33,7 +33,7 @@ export const Provider = ({ children }) => {
     const profile = await axios.get("/auth/current_user");
     const { data } = await axios.get("/twilio/token");
     const chatClient = await twilioChat.create(data);
-    const syncClient = await twilioSync.create(data);
+    const syncClient = await new twilioSync(data);
     chatClient.on("tokenAboutToExpire", () =>
       updateToken(chatClient, syncClient)
     );
