@@ -1,13 +1,21 @@
-import React from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useHistory } from "react-router-dom";
 import getClassNameForExtension from "font-awesome-filetypes";
+import axios from "axios";
 
 const ChannelLeft = ({
   title = "SubChannels",
   myChannels,
   setCreateToggle,
+  profile,
+  refetchSubscribed,
 }) => {
-  const { owner, repoName } = useParams();
+  const { owner, repoName, subChannelName } = useParams();
+  const history = useHistory();
+  const [progress, setProgress] = useState(false);
+  useEffect(() => {
+    setProgress(false);
+  }, [owner, repoName, subChannelName]);
 
   return (
     <div
@@ -20,9 +28,46 @@ const ChannelLeft = ({
       {renderTitle(title)}
       <div style={{ padding: "0.75rem" }}>
         <button className="button is-fullwidth" onClick={setCreateToggle}>
-          Create New SubChannel
+          {profile.username === owner ? "Create " : "Join "}new SubChannel
         </button>
       </div>
+      <div style={{ padding: "0.75rem", paddingTop: 0 }}>
+        <button
+          className="button is-fullwidth is-danger"
+          onClick={async () => {
+            setProgress(true);
+            if (profile.username === owner) {
+              if (subChannelName === "general") {
+                console.log("Delete Channel");
+                await axios.post("/api/channels/delete", {
+                  owner,
+                  repoName,
+                });
+                history.push(`/`);
+              } else {
+                console.log("Delete Subchannel");
+                // history.push(`/channel/${owner}/${repoName}/general`);
+                refetchSubscribed();
+                setProgress(false);
+              }
+            } else {
+              if (subChannelName === "general") {
+                console.log("Leave Channel");
+              } else {
+                console.log("Leave Subchannel");
+              }
+            }
+          }}
+        >
+          {profile.username === owner ? "Delete " : "Leave "}
+          {subChannelName === "general" ? "Channel" : "SubChannel"}
+        </button>
+      </div>
+      {progress ? (
+        <progress class="progress is-medium is-dark" max="100">
+          45%
+        </progress>
+      ) : null}
       <div style={{ overflowY: "auto", flexGrow: 1 }}>
         <div style={{ padding: "0.75rem" }}>
           <div>

@@ -4,7 +4,7 @@ import { Link, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import getClassNameForExtension from "font-awesome-filetypes";
 
-const SubChannelListItem = ({ file, index }) => {
+const SubChannelListItem = ({ file, setProgress }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { repoName } = useParams();
   const history = useHistory();
@@ -28,7 +28,7 @@ const SubChannelListItem = ({ file, index }) => {
         </div>
         {isOpen ? (
           <div style={{ paddingLeft: "0.5rem" }}>
-            <SubChannelList parentPath={file.path} />
+            <SubChannelList parentPath={file.path} setProgress={setProgress} />
           </div>
         ) : null}
       </div>
@@ -44,6 +44,7 @@ const SubChannelListItem = ({ file, index }) => {
         display: "block",
       }}
       onClick={async () => {
+        setProgress();
         await axios.post("/api/subchannels/create", {
           path: file.path,
           repoName,

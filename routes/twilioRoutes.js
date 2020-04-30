@@ -43,6 +43,9 @@ module.exports = (app) => {
         friendlyName: "general",
         uniqueName: `${req.user.username}~${req.body.repoName}~general`,
         createdBy: req.user.username,
+      })
+      .catch((e) => {
+        console.log("At chat ", e.message);
       });
 
     await twilioClient.sync
@@ -50,18 +53,27 @@ module.exports = (app) => {
       .documents.create({
         uniqueName: `${req.user.username}~${req.body.repoName}~general~snippet`,
         data: { value: "" },
+      })
+      .catch((e) => {
+        console.log("At snippet ", e.message);
       });
     await twilioClient.sync
       .services(twilioKeys.sync.serviceSid)
       .documents.create({
         uniqueName: `${req.user.username}~${req.body.repoName}~general~checklist`,
         data: { items: [] },
+      })
+      .catch((e) => {
+        console.log("At checklist ", e.message);
       });
 
     await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
       .channels(`${req.user.username}~${req.body.repoName}~general`)
-      .members.create({ identity: req.user.username });
+      .members.create({ identity: req.user.username })
+      .catch((e) => {
+        console.log("At member ", e.message);
+      });
 
     await Channel.create({
       channelName: `${req.user.username}~${req.body.repoName}~general`,
@@ -77,33 +89,63 @@ module.exports = (app) => {
   });
 
   app.post("/api/channels/delete", async (req, res) => {
-    if (req.user.username !== req.body.channelName.split("~")[0]) {
+    if (req.user.username !== req.body.owner) {
       return res.send("Not allowed");
     }
-
-    const channel = await twilioClient.chat
-      .services(twilioKeys.chat.serviceSid)
-      .channels(req.body.channelName.replace(/\//g, "~"))
-      .remove();
-
-    await twilioClient.sync
-      .services(twilioKeys.sync.serviceSid)
-      .documents(`${req.body.channelName.replace(/\//g, "~")}~snippet`)
-      .remove();
-    await twilioClient.sync
-      .services(twilioKeys.sync.serviceSid)
-      .documents(`${req.body.channelName.replace(/\//g, "~")}~checklist`)
-      .remove();
-
-    if (channel) {
-      await Channel.destroy({
+    try {
+      console.log(`${req.body.owner}~${req.body.repoName}~%`);
+      const channels = await Channel.findAll({
+        attributes: ["channelName"],
         where: {
-          channelName: req.body.channelName,
+          channelName: {
+            [Op.like]: `${req.body.owner}~${req.body.repoName}~%`,
+          },
         },
       });
-    }
+      console.log(channels.length);
+      for (let i = 0; i < channels.length; i++) {
+        console.log("Inside iteration ", i);
+        console.log(channels[i].dataValues.channelName);
+        await Channel.destroy({
+          where: {
+            channelName: channels[i].dataValues.channelName,
+          },
+        });
 
-    res.send(channel);
+        await twilioClient.chat
+          .services(twilioKeys.chat.serviceSid)
+          .channels(channels[i].dataValues.channelName.replace(/\//g, "~"))
+          .remove()
+          .catch((e) => {
+            console.log("Error at chat ", e.message);
+          });
+
+        await twilioClient.sync
+          .services(twilioKeys.sync.serviceSid)
+          .documents(
+            `${channels[i].dataValues.channelName.replace(/\//g, "~")}~snippet`
+          )
+          .remove()
+          .catch((e) => {
+            console.log("Error at snippet ", e.message);
+          });
+        await twilioClient.sync
+          .services(twilioKeys.sync.serviceSid)
+          .documents(
+            `${channels[i].dataValues.channelName.replace(
+              /\//g,
+              "~"
+            )}~checklist`
+          )
+          .remove()
+          .catch((e) => {
+            console.log("Error at checklist ", e.message);
+          });
+      }
+      res.send("Success");
+    } catch (e) {
+      res.send(e.message);
+    }
   });
 
   app.post("/api/channels/join", async (req, res) => {
@@ -120,7 +162,57 @@ module.exports = (app) => {
     res.send(data);
   });
 
-  app.post("/api/channels/leave", async (req, res) => {
+  app.post("/api/subchannels/delete", async (req, res) => {
+    console.log(req.body);
+
+    await Channel.destroy({
+      where: {
+        channelName: `${req.body.owner}~${req.body.repoName}~${req.body.subChannelName}`,
+      },
+    });
+
+    await twilioClient.chat
+      .services(twilioKeys.chat.serviceSid)
+      .channels(
+        `${req.body.owner}~${req.body.repoName}~${req.body.subChannelName}`.replace(
+          /\//g,
+          "~"
+        )
+      )
+      .remove()
+      .catch((e) => {
+        console.log("Error at chat ", e.message);
+      });
+
+    await twilioClient.sync
+      .services(twilioKeys.sync.serviceSid)
+      .documents(
+        `${`${req.body.owner}~${req.body.repoName}~${req.body.subChannelName}`.replace(
+          /\//g,
+          "~"
+        )}~snippet`
+      )
+      .remove()
+      .catch((e) => {
+        console.log("Error at snippet ", e.message);
+      });
+    await twilioClient.sync
+      .services(twilioKeys.sync.serviceSid)
+      .documents(
+        `${`${req.body.owner}~${req.body.repoName}~${req.body.subChannelName}`.replace(
+          /\//g,
+          "~"
+        )}~checklist`
+      )
+      .remove()
+      .catch((e) => {
+        console.log("Error at checklist ", e.message);
+      });
+
+    res.send("done");
+  });
+
+  app.post("/api/subchannels/leave", async (req, res) => {
     const data = await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
       .channels(req.body.channelName.replace(/\//g, "~"))

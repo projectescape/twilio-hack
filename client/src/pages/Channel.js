@@ -6,7 +6,7 @@ import ResizablePanels from "../components/ResizablePanelsReact";
 import ChannelSnippet from "../components/ChannelSnippet";
 import ChannelChecklist from "../components/ChannelCheckList";
 import CreateSubChannel from "../components/CreateSubChannel";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import Context from "../context";
 
@@ -24,6 +24,7 @@ const messagesReducer = (state, action) => {
 };
 
 const SearchChannel = () => {
+  const history = useHistory();
   // Fetch gloabal profile and chatClient
   const { profile, chatClient, syncClient } = useContext(Context);
 
@@ -41,8 +42,22 @@ const SearchChannel = () => {
   // For current viewmode chat/snippet/todo
   const [viewMode, setViewMode] = useState("chat");
 
+  const refetchSubscribed = async () => {
+    setCreateToggle(false);
+    await axios
+      .get(`/api/subchannels/subscribed/${owner}/${repoName}`)
+      .then(({ data }) => {
+        setSubscribed([`${owner}~${repoName}~general`, ...data]);
+      })
+      .catch((e) => {
+        console.log("error", e.message);
+      });
+    history.push(`/channel/${owner}/${repoName}/general`);
+  };
+
   // For retreiving subscribed subchannels
   useEffect(() => {
+    setCreateToggle(false);
     axios
       .get(`/api/subchannels/subscribed/${owner}/${repoName}`)
       .then(({ data }) => {
@@ -176,10 +191,13 @@ const SearchChannel = () => {
             repoName={repoName}
             myChannels={subscribed}
             setCreateToggle={() => setCreateToggle(!createToggle)}
+            profile={profile}
+            refetchSubscribed={refetchSubscribed}
           />
           {createToggle ? (
             <CreateSubChannel
               toggleMode={() => setCreateToggle(!createToggle)}
+              refetchSubscribed={refetchSubscribed}
             />
           ) : viewMode === "snippet" ? (
             <ChannelSnippet

@@ -4,13 +4,7 @@ import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import Context from "../context";
 
-const ChannelChat = ({
-  title = "SubChannel Name",
-  toggleMode,
-  messages,
-  currentChat,
-  toggleScroll,
-}) => {
+const ChannelChat = ({ toggleMode, messages, currentChat, toggleScroll }) => {
   const { owner, repoName, subChannelName } = useParams();
   const { profile } = useContext(Context);
 
@@ -40,7 +34,7 @@ const ChannelChat = ({
         flexDirection: "column",
       }}
     >
-      {renderTitle(title, toggleMode)}
+      {renderTitle(subChannelName.replace(/~/g, "/"), toggleMode)}
 
       <div
         style={{

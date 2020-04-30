@@ -6,6 +6,7 @@ import SubChannelListItem from "./SubChannelListItem";
 const SubChannelList = ({ parentPath = "/" }) => {
   const [content, setContent] = useState(null);
   const { owner, repoName } = useParams();
+  const [progressDisplay, setProgress] = useState(false);
 
   useEffect(() => {
     axios
@@ -20,9 +21,24 @@ const SubChannelList = ({ parentPath = "/" }) => {
   }, []);
 
   if (content !== null) {
-    return content.map((file, index) => (
-      <SubChannelListItem file={file} index={index} />
-    ));
+    return (
+      <>
+        {progressDisplay ? (
+          <progress class="progress is-medium is-dark" max="100">
+            45%
+          </progress>
+        ) : null}
+
+        {content.map((file) => (
+          <SubChannelListItem
+            file={file}
+            setProgress={() => {
+              setProgress(true);
+            }}
+          />
+        ))}
+      </>
+    );
   }
 
   return (
