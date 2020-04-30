@@ -37,9 +37,9 @@ const renderTitle = (title) => {
 
 const renderChannelList = (myChannels) => {
   return myChannels.map((channel) => (
-    <div className="breadcrumb">
+    <div className="breadcrumb" key={channel}>
       <ul>
-        <li className="is-active">
+        <li className="is-active" key={channel.split("~")[0]}>
           <Link>
             <span className="icon is-small">
               <i className="fas fa-user" />
@@ -47,7 +47,7 @@ const renderChannelList = (myChannels) => {
             {channel.split("~")[0]}
           </Link>
         </li>
-        <li>
+        <li key={channel.split("~")[1]}>
           <Link
             to={`/channel/${channel.split("~")[0]}/${
               channel.split("~")[1]

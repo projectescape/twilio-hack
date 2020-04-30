@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from "react";
 import { Redirect } from "react-router-dom";
-
 import Context from "../context";
 
 const HandleLogin = () => {

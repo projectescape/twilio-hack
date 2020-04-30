@@ -1,6 +1,6 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import SubChannelListItem from "./SubChannelListItem";
 
 const SubChannelList = ({ parentPath = "/" }) => {
@@ -24,7 +24,7 @@ const SubChannelList = ({ parentPath = "/" }) => {
     return (
       <>
         {progressDisplay ? (
-          <progress class="progress is-medium is-dark" max="100">
+          <progress className="progress is-medium is-dark" max="100">
             45%
           </progress>
         ) : null}
@@ -32,6 +32,7 @@ const SubChannelList = ({ parentPath = "/" }) => {
         {content.map((file) => (
           <SubChannelListItem
             file={file}
+            key={file.name}
             setProgress={() => {
               setProgress(true);
             }}
@@ -42,7 +43,7 @@ const SubChannelList = ({ parentPath = "/" }) => {
   }
 
   return (
-    <progress class="progress is-medium is-dark" max="100">
+    <progress className="progress is-medium is-dark" max="100">
       45%
     </progress>
   );

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useContext, useMemo } from "react";
-import BannerLeft from "../components/BannerLeft";
-import SearchLeft from "../components/SearchLeft";
-import SearchChannel from "../components/SearchChannel";
-import ResizablePanels from "../components/ResizablePanelsReact";
 import axios from "axios";
-import Context from "../context";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import BannerLeft from "../components/BannerLeft";
 import CreateChannel from "../components/CreateChannel";
+import ResizablePanels from "../components/ResizablePanelsReact";
+import SearchChannel from "../components/SearchChannel";
+import SearchLeft from "../components/SearchLeft";
+import Context from "../context";
 
 const Search = () => {
   const { profile } = useContext(Context);
@@ -16,7 +16,6 @@ const Search = () => {
   useEffect(() => {
     (async () => {
       const { data } = await axios.get("/api/channels/subscribed/all");
-      console.log(data);
       setMyChannels(data);
     })();
   }, []);
@@ -53,12 +52,6 @@ const Search = () => {
           resizerColor="#353b48"
           resizerSize="10px"
         >
-          {/* <SearchLeft
-            title="Your Channels"
-            myChannels={myChannels}
-            currentAction={currentAction}
-            setCurrentAction={() => setCurrentAction(!currentAction)}
-          /> */}
           {searchLeft}
           {currentAction ? (
             <SearchChannel />

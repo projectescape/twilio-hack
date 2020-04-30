@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useHistory } from "react-router-dom";
 import getClassNameForExtension from "font-awesome-filetypes";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
 
 const ChannelLeft = ({
   title = "SubChannels",
@@ -31,40 +30,8 @@ const ChannelLeft = ({
           {profile.username === owner ? "Create " : "Join "}new SubChannel
         </button>
       </div>
-      <div style={{ padding: "0.75rem", paddingTop: 0 }}>
-        <button
-          className="button is-fullwidth is-danger"
-          onClick={async () => {
-            setProgress(true);
-            if (profile.username === owner) {
-              if (subChannelName === "general") {
-                console.log("Delete Channel");
-                await axios.post("/api/channels/delete", {
-                  owner,
-                  repoName,
-                });
-                history.push(`/`);
-              } else {
-                console.log("Delete Subchannel");
-                // history.push(`/channel/${owner}/${repoName}/general`);
-                refetchSubscribed();
-                setProgress(false);
-              }
-            } else {
-              if (subChannelName === "general") {
-                console.log("Leave Channel");
-              } else {
-                console.log("Leave Subchannel");
-              }
-            }
-          }}
-        >
-          {profile.username === owner ? "Delete " : "Leave "}
-          {subChannelName === "general" ? "Channel" : "SubChannel"}
-        </button>
-      </div>
       {progress ? (
-        <progress class="progress is-medium is-dark" max="100">
+        <progress className="progress is-medium is-dark" max="100">
           45%
         </progress>
       ) : null}
@@ -107,15 +74,14 @@ const renderSubItem = (parentPath, item, owner, repoName) => {
   if (item.children.length === 0)
     return (
       <div
+        key={parentPath + item.name}
         style={{
           paddingLeft: "1rem",
           paddingRight: "1rem",
           padding: "0.3rem 1rem",
           fontSize: "1.33rem",
         }}
-        onClick={() => {
-          console.log(parentPath + item.name);
-        }}
+        onClick={() => {}}
       >
         <Link
           to={`/channel/${owner}/${repoName}/${(parentPath + item.name).replace(
@@ -156,8 +122,6 @@ const renderSubItem = (parentPath, item, owner, repoName) => {
 };
 
 const renderSubChannelList = (myChannels, owner, repoName) => {
-  console.log(myChannels);
-
   return myChannels.map((c) => renderSubItem("", c, owner, repoName));
 };
 

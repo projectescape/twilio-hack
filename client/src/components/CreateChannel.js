@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 
 const CreateChannel = ({ title = "Create Channels", username }) => {
   const [result, setResult] = useState([]);
@@ -60,9 +60,8 @@ const renderRepos = (result, username, searched, history, setShowProgress) => {
         45%
       </progress>
     );
-  console.log("Rendering Repos");
   return result.map((repo) => (
-    <div className="breadcrumb">
+    <div className="breadcrumb" key={repo}>
       <ul>
         <li className="is-active">
           <Link>

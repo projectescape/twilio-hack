@@ -65,8 +65,6 @@ module.exports = (app) => {
 
     data = data.map((repo) => repo.dataValues.channelName);
 
-    console.log(data);
-
     res.json(data);
   });
 
@@ -125,8 +123,6 @@ module.exports = (app) => {
 
     data = data.map((repo) => repo.dataValues.channelName);
 
-    console.log(data);
-
     res.json(data);
   });
 
@@ -143,8 +139,6 @@ module.exports = (app) => {
       order: [["channelName", "ASC"]],
     });
     data = data.map((repo) => repo.dataValues.channelName);
-
-    console.log(data);
 
     res.json(data);
   });
@@ -165,8 +159,6 @@ module.exports = (app) => {
       order: [["channelName", "ASC"]],
     });
     data = data.map((repo) => repo.dataValues.channelName);
-
-    console.log(data);
 
     res.json(data);
   });
@@ -189,8 +181,6 @@ module.exports = (app) => {
     });
     data = data.map((repo) => repo.dataValues.channelName);
 
-    console.log(data);
-
     res.json(data);
   });
 
@@ -212,8 +202,6 @@ module.exports = (app) => {
     });
     data = data.map((repo) => repo.dataValues.channelName);
 
-    console.log(data);
-
     res.json(data);
   });
 
@@ -229,6 +217,28 @@ module.exports = (app) => {
           },
         },
         username: req.user.username,
+      },
+      order: [["channelName", "ASC"]],
+    });
+
+    data = data.map((channel) => channel.dataValues.channelName);
+
+    res.json(data);
+  });
+
+  // All subchannels for a particular not subscribed
+  app.get("/api/subchannels/nonsubscribed/:owner/:repo", async (req, res) => {
+    let data = await Channel.findAll({
+      attributes: ["channelName"],
+      where: {
+        channelName: {
+          [Op.and]: {
+            [Op.like]: `${req.params.owner}~${req.params.repo}~%`,
+            [Op.notIn]: literal(
+              `(select uc."channelName" from "userchannels" uc where uc.username = '${req.user.username}' )`
+            ),
+          },
+        },
       },
       order: [["channelName", "ASC"]],
     });

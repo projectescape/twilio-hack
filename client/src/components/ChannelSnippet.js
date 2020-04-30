@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const ChannelSnippet = ({
   toggleMode,
@@ -67,7 +67,7 @@ const renderTitle = (
         }}
       >
         <span className="icon">
-          <i class="fas fa-arrow-up"></i>
+          <i className="fas fa-arrow-up"></i>
         </span>
         <span style={{ paddingLeft: "0.5rem" }}>Push</span>
       </div>
@@ -82,7 +82,7 @@ const renderTitle = (
         onClick={handlePull}
       >
         <span className="icon">
-          <i class="fas fa-arrow-down"></i>
+          <i className="fas fa-arrow-down"></i>
         </span>
         <span style={{ paddingLeft: "0.5rem" }}>Pull</span>
       </div>
@@ -103,25 +103,6 @@ const renderTitle = (
           <i className="fas fa-2x fa-times"></i>
         </span>
       </div>
-      {/* <div class="buttons has-addons is-marginless">
-        <button class="button" style={{ height: "100%" }}>
-          <span class="icon">
-            <i class="fas fa-arrow-down"></i>
-          </span>
-          <span>Pull</span>
-        </button>
-        <button class="button" style={{ height: "100%" }}>
-          <span class="icon">
-            <i class="fas fa-arrow-up"></i>
-          </span>
-          <span>Push</span>
-        </button>
-        <button class="button is-danger" style={{ height: "100%" }}>
-          <span class="icon">
-            <i class="fas fa-times"></i>
-          </span>
-        </button>
-      </div> */}
     </div>
   );
 };

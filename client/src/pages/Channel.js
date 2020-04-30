@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useContext, useReducer } from "react";
-import BannerLeft from "../components/BannerLeft";
-import ChannelLeft from "../components/ChannelLeft";
-import ChannelChat from "../components/ChannelChat";
-import ResizablePanels from "../components/ResizablePanelsReact";
-import ChannelSnippet from "../components/ChannelSnippet";
-import ChannelChecklist from "../components/ChannelCheckList";
-import CreateSubChannel from "../components/CreateSubChannel";
-import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import BannerLeft from "../components/BannerLeft";
+import ChannelChat from "../components/ChannelChat";
+import ChannelChecklist from "../components/ChannelCheckList";
+import ChannelLeft from "../components/ChannelLeft";
+import ChannelSnippet from "../components/ChannelSnippet";
+import CreateSubChannel from "../components/CreateSubChannel";
+import JoinSubChannel from "../components/JoinSubChannel";
+import ResizablePanels from "../components/ResizablePanelsReact";
 import Context from "../context";
 
 const messagesReducer = (state, action) => {
@@ -43,11 +44,11 @@ const SearchChannel = () => {
   const [viewMode, setViewMode] = useState("chat");
 
   const refetchSubscribed = async () => {
-    setCreateToggle(false);
     await axios
       .get(`/api/subchannels/subscribed/${owner}/${repoName}`)
       .then(({ data }) => {
         setSubscribed([`${owner}~${repoName}~general`, ...data]);
+        // setCreateToggle(false);
       })
       .catch((e) => {
         console.log("error", e.message);
@@ -58,6 +59,7 @@ const SearchChannel = () => {
   // For retreiving subscribed subchannels
   useEffect(() => {
     setCreateToggle(false);
+    setViewMode("chat");
     axios
       .get(`/api/subchannels/subscribed/${owner}/${repoName}`)
       .then(({ data }) => {
@@ -94,16 +96,13 @@ const SearchChannel = () => {
   const [prev, setPrev] = useState(null);
 
   const handleMessage = ({ state }) => {
-    console.log("Handle Message", state);
     addNewMessage(state);
   };
 
   const handleSnippet = (s) => {
-    console.log("Handling Snippet", s);
     setSnippet(s.value);
   };
   const handleCheckList = (s) => {
-    console.log("Handling CheckList", s);
     setChecklist(s.value);
   };
 
@@ -117,16 +116,12 @@ const SearchChannel = () => {
     let currentChat = null;
     let currentSnippet = null;
     let currentCheckList = null;
-    console.log("creating currentChat");
     chatClient
       .getChannelByUniqueName(`${owner}~${repoName}~${subChannelName}`)
       .then((channel) => {
         setCurrentChat(channel);
         currentChat = channel;
         channel.on("messageAdded", handleMessage);
-        console.log("Adding Listener");
-
-        console.log("Getting Messages");
         currentChat.getMessages().then((messages) => {
           setMessages(messages.items.map((i) => i.state));
           setPrev({
@@ -135,11 +130,9 @@ const SearchChannel = () => {
           });
         });
       });
-    console.log("creating Syncs");
     syncClient
       .document(`${owner}~${repoName}~${subChannelName}~snippet`)
       .then((doc) => {
-        console.log("Check if snippet null", doc);
         setCurrentSnippet(doc);
         currentSnippet = doc;
         doc.on("updated", handleSnippet);
@@ -154,14 +147,12 @@ const SearchChannel = () => {
         setChecklist(doc.value);
       });
     return () => {
-      console.log("Removing Listener", currentChat);
       currentChat.removeListener("messageAdded", () => {});
       currentChat.removeAllListeners();
       currentSnippet.removeListener("updated", () => {});
       currentSnippet.removeAllListeners();
       currentCheckList.removeListener("updated", () => {});
       currentCheckList.removeAllListeners();
-      console.log("Removed");
     };
   }, [owner, repoName, subChannelName]);
 
@@ -195,10 +186,15 @@ const SearchChannel = () => {
             refetchSubscribed={refetchSubscribed}
           />
           {createToggle ? (
-            <CreateSubChannel
-              toggleMode={() => setCreateToggle(!createToggle)}
-              refetchSubscribed={refetchSubscribed}
-            />
+            owner === profile.username ? (
+              <CreateSubChannel
+                toggleMode={() => setCreateToggle(!createToggle)}
+              />
+            ) : (
+              <JoinSubChannel
+                toggleMode={() => setCreateToggle(!createToggle)}
+              />
+            )
           ) : viewMode === "snippet" ? (
             <ChannelSnippet
               toggleMode={() => setViewMode("chat")}

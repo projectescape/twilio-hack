@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import SubChannelList from "./SubChannelList";
-import { Link, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import getClassNameForExtension from "font-awesome-filetypes";
+import React, { useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
+import SubChannelList from "./SubChannelList";
 
 const SubChannelListItem = ({ file, setProgress }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,16 +1,12 @@
-import React, { useState, useMemo } from "react";
-import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
+import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 
 const SearchChannel = () => {
   const [result, setResult] = useState([]);
   const [inputVal, setInputVal] = useState("");
   const [showProgress, setShowProgress] = useState(false);
   const history = useHistory();
-  const repoList = useMemo(
-    () => renderRepos(result, history, setShowProgress),
-    [result]
-  );
 
   return (
     <div
@@ -85,7 +81,7 @@ const SearchChannel = () => {
           flexGrow: 1,
         }}
       >
-        {repoList}
+        {renderRepos(result, history, setShowProgress)}
       </div>
     </div>
   );
@@ -102,11 +98,10 @@ const renderTitle = (title) => {
 };
 
 const renderRepos = (result, history, setShowProgress) => {
-  console.log("Rendering Repos");
   return result.map((repo) => (
-    <div className="breadcrumb">
+    <div className="breadcrumb" key={repo}>
       <ul>
-        <li className="is-active">
+        <li className="is-active" key={repo.split("~")[0]}>
           <Link>
             <span className="icon is-small">
               <i className="fas fa-user" />
@@ -114,7 +109,7 @@ const renderRepos = (result, history, setShowProgress) => {
             {repo.split("~")[0]}
           </Link>
         </li>
-        <li>
+        <li key={repo.split("~")[1]}>
           <Link
             onClick={async () => {
               setShowProgress(true);

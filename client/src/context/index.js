@@ -37,7 +37,6 @@ export const Provider = ({ children }) => {
     chatClient.on("tokenAboutToExpire", () =>
       updateToken(chatClient, syncClient)
     );
-    console.log("chatClient", chatClient);
     dispatch({
       type: "handleLogin",
       payload: {

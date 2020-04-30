@@ -16,7 +16,6 @@ module.exports = (app) => {
   );
 
   app.get("/auth/current_user", async (req, res) => {
-    console.log(req.user);
     if (!req.user) res.send("Not Logged In");
     else {
       const { dataValues } = await User.findByPk(req.user.username);

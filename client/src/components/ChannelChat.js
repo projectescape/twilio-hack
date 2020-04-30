@@ -1,8 +1,8 @@
-import React, { useEffect, useContext } from "react";
-import ChatInputField from "./ChatInputField";
 import dayjs from "dayjs";
+import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Context from "../context";
+import ChatInputField from "./ChatInputField";
 
 const ChannelChat = ({ toggleMode, messages, currentChat, toggleScroll }) => {
   const { owner, repoName, subChannelName } = useParams();
@@ -105,7 +105,7 @@ const renderTitle = (title, toggleMode) => {
 const renderMessages = (messages, profile) => {
   if (messages === null) {
     return (
-      <progress class="progress is-medium is-dark" max="100">
+      <progress className="progress is-medium is-dark" max="100">
         45%
       </progress>
     );

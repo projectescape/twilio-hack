@@ -34,9 +34,6 @@ module.exports = (app) => {
   });
 
   app.post("/api/channels/create", async (req, res) => {
-    console.log(req.user.username);
-    console.log(req.body);
-
     const channel = await twilioClient.chat
       .services(twilioKeys.chat.serviceSid)
       .channels.create({
@@ -84,7 +81,6 @@ module.exports = (app) => {
       channelName: `${req.user.username}~${req.body.repoName}~general`,
     });
 
-    console.log(channel);
     res.json(channel);
   });
 
@@ -93,7 +89,6 @@ module.exports = (app) => {
       return res.send("Not allowed");
     }
     try {
-      console.log(`${req.body.owner}~${req.body.repoName}~%`);
       const channels = await Channel.findAll({
         attributes: ["channelName"],
         where: {
@@ -102,10 +97,7 @@ module.exports = (app) => {
           },
         },
       });
-      console.log(channels.length);
       for (let i = 0; i < channels.length; i++) {
-        console.log("Inside iteration ", i);
-        console.log(channels[i].dataValues.channelName);
         await Channel.destroy({
           where: {
             channelName: channels[i].dataValues.channelName,
@@ -163,8 +155,6 @@ module.exports = (app) => {
   });
 
   app.post("/api/subchannels/delete", async (req, res) => {
-    console.log(req.body);
-
     await Channel.destroy({
       where: {
         channelName: `${req.body.owner}~${req.body.repoName}~${req.body.subChannelName}`,
@@ -235,7 +225,6 @@ module.exports = (app) => {
         channelName: `${req.user.username}~${req.body.repoName}~${req.body.path}`,
       },
     });
-    console.log("created ", created);
     if (created) {
       await twilioClient.chat
         .services(twilioKeys.chat.serviceSid)

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import { Switch, Route } from "react-router-dom";
-import Context from "./context";
-import Landing from "./pages/Landing";
-import Search from "./pages/Search";
+import { Route, Switch } from "react-router-dom";
 import HandleLogin from "./components/HandleLogin";
 import Navbar from "./components/Navbar";
+import Context from "./context";
 import Channel from "./pages/Channel";
+import Landing from "./pages/Landing";
+import Search from "./pages/Search";
 
 const Routes = () => {
   const { profile, handleLogin } = useContext(Context);
