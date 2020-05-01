@@ -46,6 +46,7 @@ const ChannelChecklist = ({
                         ...checklist.items,
                       ],
                     });
+                    currentChat.sendMessage("", { type: "checklist" });
                     setInputVal("");
                   }
                 }
@@ -68,6 +69,7 @@ const ChannelChecklist = ({
                     ...checklist.items,
                   ],
                 });
+                currentChat.sendMessage("", { type: "checklist" });
                 setInputVal("");
               }
             }}
@@ -147,6 +149,7 @@ const renderChecklist = (items, currentCheckList, currentChat) => {
                           return { ...i, checked: !i.checked };
                         }),
                       });
+                      currentChat.sendMessage("", { type: "checklist" });
                     }}
                   >
                     <span className="icon is-large has-background-success">
@@ -174,6 +177,7 @@ const renderChecklist = (items, currentCheckList, currentChat) => {
                       currentCheckList.update({
                         items: items.filter((i) => i.key !== item.key),
                       });
+                      currentChat.sendMessage("", { type: "checklist" });
                     }}
                   >
                     <span className="icon is-large has-background-danger">

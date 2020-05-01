@@ -25,40 +25,20 @@ const ChatInputField = ({ currentChat }) => {
           }}
         ></textarea>
       </div>
-      <div className="control">
-        <div className="">
-          <div>
-            <button
-              className="button is-warning"
-              onClick={() => {
-                if (message !== "") {
-                  currentChat.sendMessage(message, { type: "code" });
-                  setMessage("");
-                }
-              }}
-            >
-              <span className="icon is-medium">
-                <i className="fas fa-code"></i>
-              </span>
-            </button>
-          </div>
-          <div>
-            <button
-              className="button is-info"
-              onClick={() => {
-                if (message !== "") {
-                  currentChat.sendMessage(message, { type: "chat" });
-                  setMessage("");
-                }
-              }}
-            >
-              <span className="icon is-medium">
-                <i className="fas fa-paper-plane"></i>
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <button
+        className="button is-info"
+        style={{ height: "auto" }}
+        onClick={() => {
+          if (message !== "") {
+            currentChat.sendMessage(message, { type: "chat" });
+            setMessage("");
+          }
+        }}
+      >
+        <span className="icon is-medium">
+          <i className="fas fa-paper-plane"></i>
+        </span>
+      </button>
     </div>
   );
 };

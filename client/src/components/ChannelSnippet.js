@@ -1,5 +1,5 @@
+import { ControlledEditor as Editor } from "@monaco-editor/react";
 import React, { useState } from "react";
-
 const ChannelSnippet = ({
   toggleMode,
   currentChat,
@@ -7,9 +7,11 @@ const ChannelSnippet = ({
   snippet,
 }) => {
   const [inputVal, setInputVal] = useState(snippet.value);
+  const [lang, setLang] = useState(snippet.lang ? snippet.lang : "javascript");
 
   const handlePull = () => {
     setInputVal(snippet.value);
+    setLang(snippet.lang);
   };
 
   return (
@@ -20,22 +22,36 @@ const ChannelSnippet = ({
         flexDirection: "column",
       }}
     >
-      {renderTitle("Snippet", toggleMode, inputVal, currentSnippet, handlePull)}
+      {renderTitle(
+        "Snippet",
+        toggleMode,
+        inputVal,
+        currentSnippet,
+        handlePull,
+        lang,
+        snippet.value !== inputVal,
+        currentChat
+      )}
+      <span className="select" style={{ width: "100%" }}>
+        <select
+          value={lang}
+          onChange={(e) => setLang(e.target.value)}
+          style={{ width: "100%" }}
+        >
+          {languages.map((l) => (
+            <option value={l}>{l}</option>
+          ))}
+        </select>
+      </span>
 
       <div style={{ flexGrow: 1 }}>
-        <textarea
-          wrap="off"
-          style={{
-            resize: "none",
-            width: "100%",
-            height: "100%",
-            background: "inherit",
-            border: "none",
-            padding: "1rem",
-          }}
+        <Editor
+          theme="dark"
+          language={lang}
           value={inputVal}
-          onChange={(e) => setInputVal(e.target.value)}
-        ></textarea>
+          options={{ lineNumbers: "on" }}
+          onChange={(ev, val) => setInputVal(val)}
+        />
       </div>
     </div>
   );
@@ -46,13 +62,21 @@ const renderTitle = (
   toggleMode,
   inputVal,
   currentSnippet,
-  handlePull
+  handlePull,
+  lang,
+  subHeading,
+  currentChat
 ) => {
   return (
     <div className="has-background-light" style={{ display: "flex" }}>
       <div style={{ flexGrow: 1 }}>
         <h1 className="subtitle is-3" style={{ padding: "0.7rem" }}>
           {title}
+          {subHeading ? (
+            <h1 className="subtitle is-6" style={{ display: "inline" }}>
+              {" (Different from remote. Push/Pull to update/fetch remote)"}
+            </h1>
+          ) : null}
         </h1>
       </div>
       <div
@@ -63,7 +87,8 @@ const renderTitle = (
           cursor: "pointer",
         }}
         onClick={() => {
-          currentSnippet.update({ value: inputVal });
+          currentSnippet.update({ value: inputVal, lang });
+          currentChat.sendMessage("", { type: "snippet" });
         }}
       >
         <span className="icon">
@@ -106,5 +131,72 @@ const renderTitle = (
     </div>
   );
 };
+
+const languages = [
+  "abap",
+  "apex",
+  "azcli",
+  "bat",
+  "cameligo",
+  "clojure",
+  "coffee",
+  "cpp",
+  "csharp",
+  "csp",
+  "css",
+  "dart",
+  "dockerfile",
+  "fsharp",
+  "go",
+  "graphql",
+  "handlebars",
+  "html",
+  "ini",
+  "java",
+  "javascript",
+  "julia",
+  "kotlin",
+  "less",
+  "lexon",
+  "lua",
+  "markdown",
+  "mips",
+  "msdax",
+  "mysql",
+  "objective-c",
+  "pascal",
+  "pascaligo",
+  "perl",
+  "pgsql",
+  "php",
+  "postiats",
+  "powerquery",
+  "powershell",
+  "pug",
+  "python",
+  "r",
+  "razor",
+  "redis",
+  "redshift",
+  "restructuredtext",
+  "ruby",
+  "rust",
+  "sb",
+  "scheme",
+  "scss",
+  "shell",
+  "solidity",
+  "sophia",
+  "sql",
+  "st",
+  "swift",
+  "tcl",
+  "test",
+  "twig",
+  "typescript",
+  "vb",
+  "xml",
+  "yaml",
+];
 
 export default ChannelSnippet;

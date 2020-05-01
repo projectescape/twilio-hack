@@ -49,7 +49,7 @@ module.exports = (app) => {
       .services(twilioKeys.sync.serviceSid)
       .documents.create({
         uniqueName: `${req.user.username}~${req.body.repoName}~general~snippet`,
-        data: { value: "" },
+        data: { value: "", lang: "javascript" },
       })
       .catch((e) => {
         console.log("At snippet ", e.message);
@@ -252,7 +252,7 @@ module.exports = (app) => {
           uniqueName: `${req.user.username}~${
             req.body.repoName
           }~${req.body.path.replace(/\//g, "~")}~snippet`,
-          data: { value: "" },
+          data: { value: "", lang: "javascript" },
         });
       await twilioClient.sync
         .services(twilioKeys.sync.serviceSid)

@@ -152,6 +152,40 @@ const renderMessages = (messages, profile) => {
         </div>
       );
     }
+    if (
+      messages[i].attributes.type === "snippet" ||
+      messages[i].attributes.type === "checklist"
+    ) {
+      ans.push(
+        <div
+          key={messages[i].sid}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            paddingBottom: "10px",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            className="has-background-grey-lighter"
+            style={{
+              maxWidth: "70%",
+              minWidth: "10%",
+              overflowWrap: "break-word",
+            }}
+          >
+            <div style={{ padding: "7px" }}>
+              {`${messages[i].author} has updated the ${messages[i].attributes.type}`}
+            </div>
+            <div className="has-background-grey-light is-size-7">
+              <h1 style={{ padding: "3px" }}>
+                {dayjs(messages[i].timestamp).format("h mm a")}
+              </h1>
+            </div>
+          </div>
+        </div>
+      );
+    }
   }
 
   return ans;

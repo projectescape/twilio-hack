@@ -11,7 +11,7 @@ const Landing = () => {
           <div className="navbar-item">Git Talking</div>
         </div>
       </nav>
-      <section className="hero is-medium is-primary is-fullheight is-bold">
+      <section className="hero is-medium is-dark is-fullheight is-bold">
         <div className="hero-body">
           <div className="container">
             <h1 className="title">Welcome to Git Talking</h1>
