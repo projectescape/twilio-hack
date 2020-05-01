@@ -7,13 +7,14 @@ const BannerLeft = ({ title }) => {
         display: "inline-block",
         width: "30px",
         height: "100%",
-        paddingTop: "50vh",
+        paddingTop: "60vh",
       }}
     >
       <div
         className="is-size-4 has-text-white-bis "
         style={{
           transform: "rotate(-90deg)",
+          whiteSpace: "nowrap",
         }}
       >
         {title}

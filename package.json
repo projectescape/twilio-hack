@@ -11,7 +11,7 @@
     "server": "nodemon index.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.19.2",
     "concurrently": "^5.1.0",

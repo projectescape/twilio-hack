@@ -1,12 +1,14 @@
 # Git Talking
 
-Git talking is an application that helps you to manage your github projects with other contributors by having features like Chat for discussion, Code Snippet share for fast exchange of logic and CheckList to manage completed and pending tasks.
-Subchannels for indidual files of the repository can also be made to get new instances of Chat, Snippet Share and CheckList that can be used to have those file specific exchanges.
+Git talking is an application that helps you manage your github projects by providing a platform to interact with other contributors by having features like Chat for discussion, Code Snippet Share for fast exchange of code and logic and CheckList to manage completed and pending tasks.
+Subchannels for individual files of the repository can also be made to get new instances of Chat, Snippet Share and CheckList that can be used to have those file specific exchanges.
+
+[Dev post for the project](https://dev.to/projectescape/submission-git-talking-35pa)
 
 ## Note
 
 1. This App uses Twilio services to function, so twilio specific keys are needed.
-1. This App is setup using node.js v14 . If you are using an older version of node, see legacy setup towards the end.
+1. This App is setup using node.js v14 . If you are using an older version of node ( < 14 ), see legacy setup towards the end.
 
 ## Local Setup
 
@@ -20,7 +22,7 @@ Subchannels for indidual files of the repository can also be made to get new ins
    ```
 1. Run the project by
    ```bash
-   npm start dev
+   npm run dev
    ```
 
 ## Legacy Setup
